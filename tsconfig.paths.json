@@ -3,7 +3,14 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"],
-      "@components/*": ["src/components/*"]
+      "@public/*": ["src/public/*"],
+      "@app/*": ["src/app/*"],
+      "@components/*": ["src/app/components/*"],
+      "@services/*": ["src/app/services/*"],
+      "@utils/*": ["src/app/utils/*"],
+      "@apis/*": ["src/app/apis/*"],
+      "@appTypes/*": ["src/app/types/*"],
+      "@customHooks/*": ["src/app/customHooks/*"]
     }
   }
 }
