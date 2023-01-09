@@ -15,18 +15,18 @@ export default <I>(input: I): [ ISearch, ISearchFn ] => {
     size: 10,
   });
 
-  const handleChangeSize = (size: number): void => { setInputSearch({ ...inputSearch, size }); };
-  const handleChangePage = (offset: number): void => { setInputSearch({ ...inputSearch, offset }); };
+  function handleChangeSize(size: number): void { setInputSearch({ ...inputSearch, size }); }
+  function handleChangePage(offset: number): void { setInputSearch({ ...inputSearch, offset }); }
 
-  const handleChangeInputSearch = (e: ChangeEvent<HTMLInputElement>): void => {
+  function handleChangeInputSearch(e: ChangeEvent<HTMLInputElement>): void {
     const { name, value } = e.target;
 
     console.log(name);
 
     setInputSearch({ ...inputSearch, [name]: value });
-  };
+  }
 
-  const customChangeInputSearch = (data: Record<string, any>): void => { setInputSearch({ ...inputSearch, ...data }); };
+  function customChangeInputSearch(data: Record<string, any>): void { setInputSearch({ ...inputSearch, ...data }); }
 
   return [
     inputSearch,

@@ -10,7 +10,8 @@
       "@utils/*": ["src/app/utils/*"],
       "@apis/*": ["src/app/apis/*"],
       "@appTypes/*": ["src/app/types/*"],
-      "@customHooks/*": ["src/app/customHooks/*"]
+      "@customHooks/*": ["src/app/customHooks/*"],
+      "@routers/*": ["src/app/routers/*"]
     }
   }
 }

@@ -18,6 +18,7 @@ export default ({ mode }) => {
         "@apis": path.resolve(__dirname, "./src/app/apis"),
         "@appTypes": path.resolve(__dirname, "./src/app/types"),
         "@customHooks": path.resolve(__dirname, "./src/app/customHooks"),
+        "@routers": path.resolve(__dirname, "./src/app/routers"),
       },
     },
   });

@@ -12,9 +12,8 @@ import { useDebounce } from '@services/debounce';
 
 import './App.scss';
 
-function App(): React.ReactNode {
+function App(): JSX.Element {
   const [inputSearch, { handleChangePage, handleChangeInputSearch }] = useSearch({ name: '' });
-
   const inputDebounce = useDebounce(inputSearch);
 
   const { isLoading, data } = useFetch<INote[], ISearch>(listAllNotes, inputDebounce);
@@ -28,9 +27,10 @@ function App(): React.ReactNode {
           <div className="App-content">
             {data.data.map((v) => <p key={v._id}>{v.content}</p>)}
           </div>
-          <span onClick={() => handleChangePage(10)}> change page</span>
+          <span onClick={function changePage() { handleChangePage(10); }}> change page </span>
         </div>
       ) : 'loading'}
+
     </div>
   );
 }
