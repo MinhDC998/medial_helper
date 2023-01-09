@@ -18,6 +18,10 @@ function App(): JSX.Element {
 
   const { isLoading, data } = useFetch<INote[], ISearch>(listAllNotes, inputDebounce);
 
+  function changePage(): void {
+    handleChangePage(10);
+  }
+
   return (
     <div className="App">
       <input type="text" name="name" onChange={handleChangeInputSearch} />
@@ -25,12 +29,15 @@ function App(): JSX.Element {
       {!isLoading && data?.statusCode === 'OK' ? (
         <div>
           <div className="App-content">
-            {data.data.map((v) => <p key={v._id}>{v.content}</p>)}
+            {data.data.map((v) => (
+              <p key={v._id}>{v.content}</p>
+            ))}
           </div>
-          <span onClick={function changePage() { handleChangePage(10); }}> change page </span>
+          <span onClick={changePage}>change page</span>
         </div>
-      ) : 'loading'}
-
+      ) : (
+        'loading'
+      )}
     </div>
   );
 }

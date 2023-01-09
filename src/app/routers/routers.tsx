@@ -7,6 +7,7 @@ import Root from '@components/.';
 import Home from '@components/Home/.';
 import About from '@components/About/.';
 import App from '@components/App/.';
+import Timeline from '@components/Timeline/.';
 
 import Error from '@components/Error';
 
@@ -15,6 +16,7 @@ const routes = createBrowserRouter(createRoutesFromElements(
     <Route path={routersEndpoint.home} element={<Home />} />
     <Route path={routersEndpoint.about} element={<About />} />
     <Route path={routersEndpoint.app} element={<App />} />
+    <Route path={routersEndpoint.timeline} element={<Timeline />} />
   </Route>,
 ));
 
