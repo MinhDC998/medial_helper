@@ -1,6 +1,7 @@
 export default {
-  home: '/home',
-  about: '/about',
-  app: '/app',
-  timeline: '/timeline',
+  login: '/dang-nhap',
+  home: '/trang-chu',
+  searchBy: '/truy-cuu/:by',
+  searchByMedicine: 'thuoc',
+  searchBySick: 'benh',
 };

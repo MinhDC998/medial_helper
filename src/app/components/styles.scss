@@ -1,0 +1,29 @@
+#header {
+  min-height: 60px;
+  background-color: lightgreen;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  #header_user {
+    justify-self: flex-end;
+    display: flex;
+    height: 100%;
+    min-width: 150px;
+    align-items: center;
+    gap: 12px;
+
+    #header_avatar {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      border: 1px solid lightgrey;
+      background-color: #fff;
+    }
+
+    #header_user_name {
+      color: #fff;
+    }
+  }
+}

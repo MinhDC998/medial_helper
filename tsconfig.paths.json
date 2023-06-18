@@ -11,7 +11,9 @@
       "@apis/*": ["src/app/apis/*"],
       "@appTypes/*": ["src/app/types/*"],
       "@customHooks/*": ["src/app/customHooks/*"],
-      "@routers/*": ["src/app/routers/*"]
+      "@routers/*": ["src/app/routers/*"],
+      "@constants/*": ["src/app/constants/*"],
+      "@ts/*": ["src/app/types/*"]
     }
   }
 }

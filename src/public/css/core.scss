@@ -1,0 +1,115 @@
+@import './variables.scss';
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+a {
+  text-decoration: none;
+}
+
+li {
+  list-style-type: none;
+}
+
+.mt-24 {
+  margin-top: 24px;
+}
+
+.mr-24 {
+  margin-right: 24px;
+}
+
+.ml-24 {
+  margin-left: 24px;
+}
+
+.none-padding {
+  padding: 0 !important;
+}
+
+.none-margin {
+  margin: 0 !important;
+}
+
+.form {
+  width: 100%;
+  margin: 24px 0;
+  // border: 1px solid lightgray;
+  border-radius: 5px;
+  padding: 24px;
+  box-sizing: border-box;
+
+  .form-group {
+    position: relative;
+    margin: 24px 0;
+
+    label {
+      position: absolute;
+      font-size: 14px;
+      z-index: 10;
+      top: -13px;
+      background-color: #fff;
+      left: 10px;
+      color: gray;
+    }
+
+    input {
+      border: 1px solid lightgray;
+      border-radius: 3px;
+      outline: none;
+      width: 100%;
+      padding: 3px 12px;
+      box-sizing: border-box;
+    }
+
+    .datepicker {
+      width: 100%;
+      padding: 0;
+
+      input {
+        border: none;
+      }
+
+      .ant-picker-suffix {
+        margin-right: 12px;
+      }
+    }
+  }
+
+  .error-form-group {
+    label {
+      color: lightcoral;
+    }
+
+    input {
+      border: 1px solid lightcoral;
+    }
+  }
+
+  .error-message {
+    font-size: 14px;
+    font-style: italic;
+    color: lightcoral;
+  }
+}
+
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+.main_content {
+  width: 80%;
+  margin: 0 auto;
+  padding: 24px 0;
+}

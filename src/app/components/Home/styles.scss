@@ -1,0 +1,80 @@
+input[type='text'] {
+  width: 100%;
+  border: 2px solid #aaa;
+  border-radius: 4px;
+  margin: 8px 0;
+  outline: none;
+  padding: 8px;
+  box-sizing: border-box;
+  transition: 0.3s;
+}
+
+input[type='text']:focus {
+  border-color: dodgerBlue;
+  box-shadow: 0 0 8px 0 dodgerBlue;
+}
+
+.inputWithIcon input[type='text'] {
+  padding-left: 40px;
+}
+
+.inputWithIcon {
+  position: relative;
+}
+
+.inputWithIcon i {
+  position: absolute;
+  left: 0;
+  top: 8px;
+  padding: 9px 8px;
+  color: #aaa;
+  transition: 0.3s;
+}
+
+.inputWithIcon input[type='text']:focus + i {
+  color: dodgerBlue;
+}
+x .inputWithIcon.inputIconBg i {
+  background-color: #aaa;
+  color: #fff;
+  padding: 9px 4px;
+  border-radius: 4px 0 0 4px;
+}
+
+.inputWithIcon.inputIconBg input[type='text']:focus + i {
+  color: #fff;
+  background-color: dodgerBlue;
+}
+
+#test {
+  width: 350px;
+  min-height: 60px;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  background-color: lightcoral;
+  color: #000;
+}
+
+#wrapper_tenant {
+  width: 100%;
+}
+
+#wrapper_selection {
+  display: grid;
+  gap: 24px;
+
+  .button_select {
+    width: clamp(80%, 600px, 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid darkgray;
+    min-height: 60px;
+    border-radius: 5px;
+    margin: 0 auto;
+  }
+}

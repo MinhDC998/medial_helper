@@ -1,0 +1,43 @@
+#wrapper_symptom {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 6fr));
+  gap: 24px;
+  margin-top: 24px;
+
+  .symptom {
+    border: 1px solid lightgray;
+    background-color: lightcoral;
+    border-radius: 5px;
+    min-height: 150px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    color: #000;
+  }
+}
+
+.image_pill {
+  width: 75px;
+  height: 75px;
+  object-fit: cover;
+}
+
+#wrapper_sick_selected {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  margin: 12px 0;
+  gap: 12px;
+  min-height: 32px;
+
+  .sick_selected {
+    border: 1px solid lightgray;
+    padding: 3px 6px;
+    border-radius: 5px;
+    cursor: pointer;
+
+    .remove_sick_icon {
+      color: red;
+    }
+  }
+}

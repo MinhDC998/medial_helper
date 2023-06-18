@@ -1,0 +1,91 @@
+@import 'src/public/css/variables.scss';
+
+#wrapper_login {
+  height: 100vh;
+  position: relative;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  justify-content: center;
+
+  .form {
+    width: 500px;
+    margin: 24px 0;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    padding: 24px;
+    box-sizing: border-box;
+    display: grid;
+
+    .form-group {
+      position: relative;
+      margin: 24px 0;
+
+      label {
+        position: absolute;
+        font-size: 14px;
+        z-index: 10;
+        top: -13px;
+        background-color: #fff;
+        left: 10px;
+        color: gray;
+      }
+
+      input {
+        border: 1px solid lightgray;
+        border-radius: 3px;
+        outline: none;
+        width: 100%;
+        padding: 3px 12px;
+        box-sizing: border-box;
+        margin: 0;
+      }
+    }
+
+    .error-form-group {
+      label {
+        color: lightcoral;
+      }
+
+      input {
+        border: 1px solid lightcoral;
+      }
+    }
+
+    .error-message {
+      font-size: 14px;
+      font-style: italic;
+      color: lightcoral;
+    }
+
+    #form-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      #confirm-btn {
+        padding: 6px;
+        background: #fff;
+        color: #000;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.5s all;
+        width: 100%;
+        background-color: lightgreen;
+
+        &:hover {
+          background-color: $rs-red-300;
+          color: #fff;
+          border-color: $rs-red-400;
+        }
+      }
+    }
+  }
+
+  .centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}

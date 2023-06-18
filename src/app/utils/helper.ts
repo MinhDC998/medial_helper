@@ -1,3 +1,1 @@
-export const combineEndpoint = (prefix: string, endpoint: string): string => {
-  return `${prefix}/${endpoint}`;
-};
+export const combineEndpoint = (prefix: string, endpoint: string): string => `${prefix}/${endpoint}`;

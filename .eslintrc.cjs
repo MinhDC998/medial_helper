@@ -24,9 +24,14 @@ module.exports = {
       'error',
       2,
       {
-        SwitchCase: 2,
+        SwitchCase: 1,
         ignoredNodes: ['ConditionalExpression'],
       },
     ],
+    '@typescript-eslint/explicit-function-return-type': 0,
+    '@typescript-eslint/member-delimiter-style': 0,
+    'react/jsx-props-no-spreading': 0,
+    '@typescript-eslint/no-misused-promises': 0,
+    'no-plusplus': 0,
   },
 };
