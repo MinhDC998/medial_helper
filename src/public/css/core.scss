@@ -112,4 +112,17 @@ li {
   width: 80%;
   margin: 0 auto;
   padding: 24px 0;
+  position: relative;
+}
+
+.btn {
+  min-width: 120px;
+  padding: 12px 24px;
+  box-sizing: border-box;
+  border: 1px solid lightgrey;
+}
+
+.back_btn {
+  margin-bottom: 24px;
+  color: #0000ee;
 }

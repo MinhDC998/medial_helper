@@ -1,6 +1,8 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 
+import { getUser as user } from '@utils/user';
+
 import './styles.scss';
 import 'antd/dist/reset.css';
 import '@public/css/core.scss';
@@ -12,7 +14,7 @@ function Root(): JSX.Element {
         <div />
         <div id="header_user">
           <div id="header_avatar" />
-          <span id="header_user_name">Nguyen Van A</span>
+          <span id="header_user_name">{user()?.displayName}</span>
         </div>
       </header>
       <Outlet />

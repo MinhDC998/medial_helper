@@ -4,73 +4,15 @@
 import React, { useState } from 'react';
 import { Table } from 'antd';
 import { getUser as user } from '@utils/user';
+import { useNavigate } from 'react-router-dom';
 
 import { ITenant } from '@ts/tenant';
 import UserRole from '@constants/role';
 
 import './styles.scss';
-
-// const dataSource = [
-//   {
-//     key: '1',
-//     image:
-//       'https://www.allcarepharmacy.ie/media/catalog/product/cache/30ef0a5a34180d98365b16f59a39bc5a/o/t/otc_-_470_x_470_22__1.png',
-//     pillCode: 'HN003',
-//     pillName: 'Thuốc ho',
-//     medicineDose: 'Sáng-1 tối-1',
-//     ingredient: 'Paracetamol',
-//     target: '1-2 tuổi',
-//     note: 'Kệ dưới',
-//   },
-//   {
-//     key: '2',
-//     image: '',
-//     pillCode: 'HN004',
-//     pillName: 'Panadon',
-//     medicineDose: 'Sáng-1 tối-1',
-//     ingredient: 'VVVV',
-//     target: 'XXXX',
-//     note: 'Kệ dưới',
-//   },
-// ];
+import routersEndpoint from '@routers/routersEndpoint';
 
 const columns = [
-  // {
-  //   title: 'Hình ảnh',
-  //   dataIndex: 'image',
-  //   key: 'image',
-  //   render: (v: any) => (v ? <img src={v} alt={v} className="image_pill" /> : ''),
-  // },
-  // {
-  //   title: 'Mã Thuốc',
-  //   dataIndex: 'pillCode',
-  //   key: 'pillCode',
-  // },
-  // {
-  //   title: 'Tên thuốc',
-  //   dataIndex: 'pillName',
-  //   key: 'pillName',
-  // },
-  // {
-  //   title: 'Liều lượng',
-  //   dataIndex: 'medicineDose',
-  //   key: 'medicineDose',
-  // },
-  // {
-  //   title: 'Thành phần chính',
-  //   dataIndex: 'ingredient',
-  //   key: 'ingredient',
-  // },
-  // {
-  //   title: 'Đối tượng',
-  //   dataIndex: 'target',
-  //   key: 'target',
-  // },
-  // {
-  //   title: 'Ghi chú',
-  //   dataIndex: 'note',
-  //   key: 'note',
-  // },
   {
     title: 'STT',
     dataIndex: 'index',
@@ -100,11 +42,17 @@ const dumpListTenant = [
 ];
 
 function Home(): JSX.Element {
+  const navigate = useNavigate();
+
   const [tenant] = useState<ITenant[]>(dumpListTenant);
   const [selectedTenant, setSelectedTenant] = useState<undefined | ITenant>(undefined);
 
   const handleSelectTenant = (tenantData: ITenant | undefined) => {
     setSelectedTenant(tenantData);
+  };
+
+  const handleNavigation = (url: string) => {
+    navigate(url);
   };
 
   const handleRenderContent = () => {
@@ -145,8 +93,22 @@ function Home(): JSX.Element {
               Bạn đang chọn chi nhánh:
               <strong>{selectedTenant.name}</strong>
             </p>
-            <div className="button_select cursor-pointer"> Quản lý danh mục thuốc </div>
-            <div className="button_select cursor-pointer"> Truy vấn dữ liệu thuốc </div>
+            <div
+              className="button_select cursor-pointer"
+              onClick={() => {
+                handleNavigation(routersEndpoint.tenantManageMedicine.replace(':id', '1'));
+              }}
+            >
+              Quản lý danh mục thuốc
+            </div>
+            <div
+              className="button_select cursor-pointer"
+              onClick={() => {
+                handleNavigation(`${routersEndpoint.searchBy}`.replace(':by', routersEndpoint.searchByMedicine));
+              }}
+            >
+              Truy vấn dữ liệu thuốc
+            </div>
             <div className="button_select cursor-pointer"> Quản lý người dùng </div>
           </div>
         );
@@ -161,8 +123,22 @@ function Home(): JSX.Element {
       case UserRole.USER:
         return (
           <div id="wrapper_selection">
-            <div className="button_select cursor-pointer"> Tra cứu theo thuốc </div>
-            <div className="button_select cursor-pointer"> Tra cứu theo bệnh </div>
+            <div
+              className="button_select cursor-pointer"
+              onClick={() => {
+                handleNavigation(`${routersEndpoint.searchBy}`.replace(':by', routersEndpoint.searchByMedicine));
+              }}
+            >
+              Tra cứu theo thuốc
+            </div>
+            <div
+              className="button_select cursor-pointer"
+              onClick={() => {
+                handleNavigation(`${routersEndpoint.searchBy}`.replace(':by', routersEndpoint.searchBySick));
+              }}
+            >
+              Tra cứu theo bệnh
+            </div>
           </div>
         );
 

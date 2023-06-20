@@ -11,6 +11,8 @@ import { ISuccessResponse } from '@ts/common/response';
 import { login as setUserCookie } from '@utils/user';
 import routes from '@routers/routersEndpoint';
 
+import ROLE from '@constants/role';
+
 import './styles.scss';
 
 const schema = yup.object().shape({
@@ -38,7 +40,6 @@ function Login() {
 
   const onSubmit = async (data: ILoginInput) => {
     try {
-      console.log(data);
       // const result: ISuccessResponse<IUser> = await login(data);
 
       // if (result.statusCode !== 'OK') {
@@ -46,7 +47,7 @@ function Login() {
       //   return;
       // }
 
-      setUserCookie({ ...data, role: 3, displayName: data.username });
+      setUserCookie({ ...data, role: ROLE.ADMIN, displayName: data.username });
 
       navigate(routes.home);
 

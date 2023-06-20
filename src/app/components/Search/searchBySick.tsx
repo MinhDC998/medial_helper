@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { Button } from 'antd';
+import { Link } from 'react-router-dom';
 
 import { ISick } from '@ts/sick';
+import routersEndpoint from '@routers/routersEndpoint';
 
 function SearchBySick() {
   const test: ISick[] = [
@@ -21,6 +24,8 @@ function SearchBySick() {
       name: 'Ho Khan',
     },
   ];
+
+  // const navigate = useNavigate();
 
   const [sicksSelected, setSicksSelected] = useState<string[]>([]);
 
@@ -54,6 +59,13 @@ function SearchBySick() {
           </span>
         ))}
       </div>
+
+      {sicksSelected.length > 0 && (
+        <Link to={routersEndpoint.searchBy.replace(':by', routersEndpoint.searchByMedicine)}>
+          <Button>Tìm kiếm thuốc với những triệu chứng đã chọn</Button>
+        </Link>
+      )}
+
       <div id="wrapper_symptom">
         {test.map((v) => (
           <div

@@ -67,12 +67,11 @@ const columns = [
 function SearchByMedicine() {
   return (
     <div style={{ marginTop: 24 }}>
-      {/* <div id="test"> Cảm cúm</div> */}
-
       <div className="inputWithIcon">
         <input type="text" placeholder="Nhập tên hoặc thành phần thuốc" />
         <i className="fa fa-search fa-lg fa-fw" aria-hidden="true" />
       </div>
+
       <Table dataSource={dataSource} columns={columns} style={{ marginTop: 12 }} scroll={{ x: 400 }} />
     </div>
   );
