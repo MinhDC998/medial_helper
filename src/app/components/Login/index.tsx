@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import { ILoginInput, IUser } from '@ts/user';
-import { ISuccessResponse } from '@ts/common/response';
+// import { ISuccessResponse } from '@ts/common/response';
 import { login as setUserCookie } from '@utils/user';
 import routes from '@routers/routersEndpoint';
 
@@ -19,6 +19,27 @@ const schema = yup.object().shape({
   username: yup.string().required('Tên đăng nhập không được để trống.'),
   password: yup.string().required('Mật khẩu không được để trống.'),
 });
+
+const sampleUsers: IUser[] = [
+  {
+    displayName: 'Normal User',
+    password: 'user',
+    role: ROLE.USER,
+    username: 'user',
+  },
+  {
+    displayName: 'Tenant User',
+    password: 'tenant',
+    role: ROLE.TENANT_USER,
+    username: 'tenant',
+  },
+  {
+    displayName: 'Admin User',
+    password: 'admin',
+    role: ROLE.ADMIN,
+    username: 'admin',
+  },
+];
 
 function Login() {
   const navigate = useNavigate();
@@ -47,7 +68,14 @@ function Login() {
       //   return;
       // }
 
-      setUserCookie({ ...data, role: ROLE.ADMIN, displayName: data.username });
+      const user = sampleUsers.find((v) => v.password === data.password && v.username === data.username);
+
+      if (!user) {
+        setError('submitError', { type: 'custom', message: 'Sai tài khoản hoặc mật khẩu' });
+        return;
+      }
+
+      setUserCookie(user);
 
       navigate(routes.home);
 
@@ -76,6 +104,8 @@ function Login() {
 
           <span className="error-message">{errors.password ? errors.password.message : ''}</span>
         </div>
+
+        <span className="error-message mb-24">{errors.submitError ? errors.submitError.message : ''}</span>
 
         <div id="form-footer">
           <input type="submit" id="confirm-btn" value="Đăng nhập" />

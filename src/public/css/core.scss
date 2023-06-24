@@ -27,6 +27,9 @@ li {
 .ml-24 {
   margin-left: 24px;
 }
+.mb-24 {
+  margin-bottom: 24px;
+}
 
 .none-padding {
   padding: 0 !important;
@@ -109,10 +112,10 @@ li {
 }
 
 .main_content {
-  width: 80%;
   margin: 0 auto;
   padding: 24px 0;
   position: relative;
+  min-height: 100vh;
 }
 
 .btn {

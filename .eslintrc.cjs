@@ -33,5 +33,6 @@ module.exports = {
     'react/jsx-props-no-spreading': 0,
     '@typescript-eslint/no-misused-promises': 0,
     'no-plusplus': 0,
+    'react-hooks/exhaustive-deps': 0,
   },
 };

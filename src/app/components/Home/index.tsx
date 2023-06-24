@@ -1,10 +1,10 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-plusplus */
 
-import React, { useState } from 'react';
-import { Table } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Table } from 'antd';
 import { getUser as user } from '@utils/user';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import { ITenant } from '@ts/tenant';
 import UserRole from '@constants/role';
@@ -43,11 +43,19 @@ const dumpListTenant = [
 
 function Home(): JSX.Element {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [tenant] = useState<ITenant[]>(dumpListTenant);
   const [selectedTenant, setSelectedTenant] = useState<undefined | ITenant>(undefined);
 
+  useEffect(() => {
+    if (location?.state?.tenant) {
+      setSelectedTenant(tenant.find((v) => v.id === location.state.tenant));
+    }
+  }, []);
+
   const handleSelectTenant = (tenantData: ITenant | undefined) => {
+    navigate(routersEndpoint.home, { replace: true, state: { tenant: tenantData?.id } });
     setSelectedTenant(tenantData);
   };
 
@@ -57,6 +65,64 @@ function Home(): JSX.Element {
 
   const handleRenderContent = () => {
     const { role } = user();
+    const searchComponent = (
+      <>
+        <div
+          key={routersEndpoint.searchByMedicine}
+          className="button_select cursor-pointer"
+          onClick={() => {
+            handleNavigation(`${routersEndpoint.searchBy}`.replace(':by', routersEndpoint.searchByMedicine));
+          }}
+        >
+          Tra cứu theo thuốc
+        </div>
+        <div
+          key={routersEndpoint.searchBySick}
+          className="button_select cursor-pointer"
+          onClick={() => {
+            handleNavigation(`${routersEndpoint.searchBy}`.replace(':by', routersEndpoint.searchBySick));
+          }}
+        >
+          Tra cứu theo bệnh
+        </div>
+      </>
+    );
+
+    const adminComponents = (
+      <>
+        <p>
+          Bạn đang chọn chi nhánh:
+          <strong>{selectedTenant?.name}</strong>
+        </p>
+
+        <div
+          className="button_select cursor-pointer"
+          onClick={() => {
+            handleNavigation(routersEndpoint.tenantManageMedicine.replace(':id', '1'));
+          }}
+        >
+          Quản lý danh mục thuốc
+        </div>
+
+        {searchComponent}
+
+        <div className="button_select cursor-pointer"> Quản lý người dùng </div>
+      </>
+    );
+
+    const tenantComponent = (
+      <>
+        <div
+          className="button_select cursor-pointer"
+          onClick={() => {
+            handleNavigation(`${routersEndpoint.searchBy}`.replace(':by', routersEndpoint.searchByMedicine));
+          }}
+        >
+          Truy vấn dữ liệu thuốc
+        </div>
+        {searchComponent}
+      </>
+    );
 
     switch (role) {
       case UserRole.ADMIN:
@@ -79,68 +145,13 @@ function Home(): JSX.Element {
           );
         }
 
-        return (
-          <div id="wrapper_selection">
-            <span
-              onClick={() => {
-                handleSelectTenant(undefined);
-              }}
-            >
-              Chọn lại chi nhánh
-            </span>
-
-            <p>
-              Bạn đang chọn chi nhánh:
-              <strong>{selectedTenant.name}</strong>
-            </p>
-            <div
-              className="button_select cursor-pointer"
-              onClick={() => {
-                handleNavigation(routersEndpoint.tenantManageMedicine.replace(':id', '1'));
-              }}
-            >
-              Quản lý danh mục thuốc
-            </div>
-            <div
-              className="button_select cursor-pointer"
-              onClick={() => {
-                handleNavigation(`${routersEndpoint.searchBy}`.replace(':by', routersEndpoint.searchByMedicine));
-              }}
-            >
-              Truy vấn dữ liệu thuốc
-            </div>
-            <div className="button_select cursor-pointer"> Quản lý người dùng </div>
-          </div>
-        );
+        return <div id="wrapper_selection">{adminComponents}</div>;
 
       case UserRole.TENANT_USER:
-        return (
-          <div id="wrapper_selection">
-            <div className="button_select cursor-pointer"> Truy vấn dữ liệu thuốc </div>
-          </div>
-        );
+        return <div id="wrapper_selection">{tenantComponent}</div>;
 
       case UserRole.USER:
-        return (
-          <div id="wrapper_selection">
-            <div
-              className="button_select cursor-pointer"
-              onClick={() => {
-                handleNavigation(`${routersEndpoint.searchBy}`.replace(':by', routersEndpoint.searchByMedicine));
-              }}
-            >
-              Tra cứu theo thuốc
-            </div>
-            <div
-              className="button_select cursor-pointer"
-              onClick={() => {
-                handleNavigation(`${routersEndpoint.searchBy}`.replace(':by', routersEndpoint.searchBySick));
-              }}
-            >
-              Tra cứu theo bệnh
-            </div>
-          </div>
-        );
+        return <div id="wrapper_selection">{searchComponent}</div>;
 
       default:
         throw new Error('No role');
@@ -149,6 +160,17 @@ function Home(): JSX.Element {
 
   return (
     <div className="main_content">
+      {selectedTenant && (
+        <Button
+          onClick={() => {
+            handleSelectTenant(undefined);
+            navigate(routersEndpoint.home);
+          }}
+        >
+          Chọn lại chi nhánh
+        </Button>
+      )}
+
       {/* <div className="inputWithIcon">
         <input type="text" placeholder="Nhập tên bệnh hoặc triệu chứng" />
         <i className="fa fa-search fa-lg fa-fw" aria-hidden="true" />

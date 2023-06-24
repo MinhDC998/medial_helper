@@ -1,26 +1,79 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { HomeOutlined, UserOutlined } from '@ant-design/icons';
+import type { MenuProps } from 'antd';
+import { Layout, Menu, theme, Dropdown, Button, Space } from 'antd';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 import { getUser as user } from '@utils/user';
+import routersEndpoint from '@routers/routersEndpoint';
 
 import './styles.scss';
-import 'antd/dist/reset.css';
 import '@public/css/core.scss';
 
-function Root(): JSX.Element {
+const { Header, Content, Sider } = Layout;
+
+export default function App() {
+  const {
+    token: { colorBgContainer },
+  } = theme.useToken();
+  const navigate = useNavigate();
+
+  const menuItems: MenuProps['items'] = [HomeOutlined].map((icon) => ({
+    key: routersEndpoint.home,
+    icon: React.createElement(icon),
+    label: 'Trang chủ',
+    onClick: () => {
+      navigate(routersEndpoint.home);
+    },
+  }));
+
+  const handleMenuClick: MenuProps['onClick'] = () => {
+    navigate(routersEndpoint.login);
+  };
+
+  const items: MenuProps['items'] = [
+    {
+      label: 'Đăng xuất',
+      key: 'logOut',
+    },
+  ];
+
+  const menuProps = {
+    items,
+    onClick: handleMenuClick,
+  };
+
   return (
-    <div>
-      <header id="header">
-        <div />
-        <div id="header_user">
-          <div id="header_avatar" />
-          <span id="header_user_name">{user()?.displayName}</span>
-        </div>
-      </header>
-      <Outlet />
-      {/* <h1> Footer </h1> */}
-    </div>
+    <Layout>
+      <Header className="header">
+        <Dropdown menu={menuProps}>
+          <Button>
+            <Space>
+              {user().displayName}
+              <UserOutlined rev={user().displayName} />
+            </Space>
+          </Button>
+        </Dropdown>
+      </Header>
+      <Layout style={{ minHeight: 'calc(100vh - 120px)' }}>
+        <Sider width={200} style={{ background: colorBgContainer, padding: '24px 0' }}>
+          <Menu mode="inline" style={{ height: '100%', borderRight: 0 }} items={menuItems} />
+        </Sider>
+        <Layout style={{ padding: '0 24px 24px' }}>
+          <Content
+            style={{
+              padding: 24,
+              margin: 0,
+              minHeight: 'calc(100vh - 60px)',
+              background: colorBgContainer,
+            }}
+          >
+            <div className="main_content">
+              <Outlet />
+            </div>
+          </Content>
+        </Layout>
+      </Layout>
+    </Layout>
   );
 }
-
-export default Root;
