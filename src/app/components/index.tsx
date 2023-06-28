@@ -56,7 +56,12 @@ export default function App() {
         </Dropdown>
       </Header>
       <Layout style={{ minHeight: 'calc(100vh - 120px)' }}>
-        <Sider width={200} style={{ background: colorBgContainer, padding: '24px 0' }}>
+        <Sider
+          width={70}
+          style={{ background: colorBgContainer, padding: '24px 0' }}
+          breakpoint="lg"
+          collapsedWidth="0"
+        >
           <Menu mode="inline" style={{ height: '100%', borderRight: 0 }} items={menuItems} />
         </Sider>
         <Layout style={{ padding: '0 24px 24px' }}>

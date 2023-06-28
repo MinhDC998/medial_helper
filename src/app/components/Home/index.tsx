@@ -17,6 +17,7 @@ const columns = [
     title: 'STT',
     dataIndex: 'index',
     key: 'index',
+    width: 50,
     render: (_: unknown, __: unknown, index: number) => <span>{++index}</span>,
   },
   {
@@ -135,6 +136,7 @@ function Home(): JSX.Element {
                 style={{ marginTop: 12 }}
                 rowKey="id"
                 rowClassName="cursor-pointer"
+                scroll={{ x: 996 }}
                 onRow={(record) => ({
                   onClick: () => {
                     handleSelectTenant(record);

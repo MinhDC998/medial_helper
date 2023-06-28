@@ -62,7 +62,7 @@ function SearchBySick() {
 
       {sicksSelected.length > 0 && (
         <Link to={routersEndpoint.searchBy.replace(':by', routersEndpoint.searchByMedicine)}>
-          <Button>Tìm kiếm thuốc với những triệu chứng đã chọn</Button>
+          <Button className="work-break">Tìm thuốc </Button>
         </Link>
       )}
 
