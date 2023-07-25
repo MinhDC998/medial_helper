@@ -1,12 +1,11 @@
 import { IUser } from '@ts/user';
 import * as cookieServices from '@services/cookies';
+import { COMMON } from '@constants/common';
 
-const keyStorage = 'userStorageKey';
-
-export const getUser = (): IUser => cookieServices.default.get(keyStorage);
+export const getUser = (): IUser => cookieServices.default.get(COMMON.COOKIE.USER);
 
 export const logout = (): void => {
-  cookieServices.default.remove(keyStorage);
+  cookieServices.default.remove(COMMON.COOKIE.USER);
 };
 
 export const login = (user: IUser): void => {
@@ -14,5 +13,5 @@ export const login = (user: IUser): void => {
 
   if (checkUser) logout();
 
-  cookieServices.default.set<IUser>(user, keyStorage);
+  cookieServices.default.set<IUser>(user, COMMON.COOKIE.USER);
 };

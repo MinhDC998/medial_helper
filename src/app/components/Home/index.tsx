@@ -1,63 +1,36 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable no-plusplus */
-
 import React, { useEffect, useState } from 'react';
-import { Button, Table } from 'antd';
+import { Button } from 'antd';
 import { getUser as user } from '@utils/user';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { ITenant } from '@ts/tenant';
 import UserRole from '@constants/role';
-
-import './styles.scss';
+import { COMMON } from '@constants/common';
 import routersEndpoint from '@routers/routersEndpoint';
+import * as cookie from '@services/cookies';
 
-const columns = [
-  {
-    title: 'STT',
-    dataIndex: 'index',
-    key: 'index',
-    width: 50,
-    render: (_: unknown, __: unknown, index: number) => <span>{++index}</span>,
-  },
-  {
-    title: 'Tên',
-    dataIndex: 'name',
-    key: 'name',
-  },
-];
-
-const dumpListTenant = [
-  {
-    id: 1,
-    name: 'Chi nhanh Tan My',
-  },
-  {
-    id: 2,
-    name: 'Chi nhanh Dinh Thon',
-  },
-  {
-    id: 3,
-    name: 'Chi nhanh Pham Hung',
-  },
-];
+import AdminDashboard from './adminDashboard';
+import './styles.scss';
 
 function Home(): JSX.Element {
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const [tenant] = useState<ITenant[]>(dumpListTenant);
   const [selectedTenant, setSelectedTenant] = useState<undefined | ITenant>(undefined);
 
   useEffect(() => {
-    if (location?.state?.tenant) {
-      setSelectedTenant(tenant.find((v) => v.id === location.state.tenant));
-    }
+    const tenant = cookie.default.get(COMMON.COOKIE.TENANT);
+    if (tenant) setSelectedTenant(tenant);
   }, []);
 
   const handleSelectTenant = (tenantData: ITenant | undefined) => {
     navigate(routersEndpoint.home, { replace: true, state: { tenant: tenantData?.id } });
     setSelectedTenant(tenantData);
+
+    if (tenantData) {
+      cookie.default.set(tenantData, COMMON.COOKIE.TENANT);
+    } else {
+      cookie.default.remove(COMMON.COOKIE.TENANT);
+    }
   };
 
   const handleNavigation = (url: string) => {
@@ -89,28 +62,6 @@ function Home(): JSX.Element {
       </>
     );
 
-    const adminComponents = (
-      <>
-        <p>
-          Bạn đang chọn chi nhánh:
-          <strong>{selectedTenant?.name}</strong>
-        </p>
-
-        <div
-          className="button_select cursor-pointer"
-          onClick={() => {
-            handleNavigation(routersEndpoint.tenantManageMedicine.replace(':id', '1'));
-          }}
-        >
-          Quản lý danh mục thuốc
-        </div>
-
-        {searchComponent}
-
-        <div className="button_select cursor-pointer"> Quản lý người dùng </div>
-      </>
-    );
-
     const tenantComponent = (
       <>
         <div
@@ -125,29 +76,16 @@ function Home(): JSX.Element {
       </>
     );
 
-    switch (role) {
+    switch (+role) {
       case UserRole.ADMIN:
-        if (!selectedTenant) {
-          return (
-            <div id="wrapper_tenant">
-              <Table
-                dataSource={tenant}
-                columns={columns}
-                style={{ marginTop: 12 }}
-                rowKey="id"
-                rowClassName="cursor-pointer"
-                scroll={{ x: 996 }}
-                onRow={(record) => ({
-                  onClick: () => {
-                    handleSelectTenant(record);
-                  },
-                })}
-              />
-            </div>
-          );
-        }
-
-        return <div id="wrapper_selection">{adminComponents}</div>;
+        return (
+          <AdminDashboard
+            handleNavigation={handleNavigation}
+            handleSelectTenant={handleSelectTenant}
+            searchComponent={searchComponent}
+            selectedTenant={selectedTenant}
+          />
+        );
 
       case UserRole.TENANT_USER:
         return <div id="wrapper_selection">{tenantComponent}</div>;
@@ -172,47 +110,6 @@ function Home(): JSX.Element {
           Chọn lại chi nhánh
         </Button>
       )}
-
-      {/* <div className="inputWithIcon">
-        <input type="text" placeholder="Nhập tên bệnh hoặc triệu chứng" />
-        <i className="fa fa-search fa-lg fa-fw" aria-hidden="true" />
-      </div>
-      <div id="wrapper_symptom">
-        {test.map((_, i) => (
-          <div className="symptom" key={i}>
-            Sample
-          </div>
-        ))}
-      </div> */}
-
-      {/* <div>
-        <Select
-          defaultValue=""
-          options={[
-            { value: '', label: 'Chọn đối tượng' },
-            { value: 'jack', label: 'Trẻ em dưới 2 tuổi' },
-          ]}
-        />
-
-        <Select
-          defaultValue=""
-          style={{ marginLeft: 24 }}
-          options={[
-            { value: '', label: 'Tình trạng bệnh' },
-            { value: 'jack', label: 'Jack' },
-            { value: 'lucy', label: 'Lucy' },
-            { value: 'Yiminghe', label: 'yiminghe' },
-            { value: 'disabled', label: 'Disabled', disabled: true },
-          ]}
-        />
-      </div>
-
-      <div style={{ marginTop: 24 }}>
-        <div id="test"> Cảm cúm</div>
-
-        <span style={{ display: 'flex', alignItems: 'center' }}>{`${dataSource.length} Kết quả tìm kiếm `}</span>
-        <Table dataSource={dataSource} columns={columns} style={{ marginTop: 12 }} scroll={{ x: 400 }} />
-      </div> */}
 
       {handleRenderContent()}
     </div>

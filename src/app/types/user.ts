@@ -6,6 +6,7 @@ export interface IUser {
   password: string;
   displayName: string;
   role: ValueOf<typeof ROLE>;
+  token: string;
 }
 
 export interface ILoginInput {

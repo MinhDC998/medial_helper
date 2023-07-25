@@ -2,47 +2,25 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
-
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
-import { ILoginInput, IUser } from '@ts/user';
-// import { ISuccessResponse } from '@ts/common/response';
-import { login as setUserCookie } from '@utils/user';
-import routes from '@routers/routersEndpoint';
+import { ILoginInput } from '@ts/user';
 
-import ROLE from '@constants/role';
+import { getUser, login as setUserCookie } from '@utils/user';
+import routes from '@routers/routersEndpoint';
+import { login } from '@apis/user';
 
 import './styles.scss';
-
-const schema = yup.object().shape({
-  username: yup.string().required('Tên đăng nhập không được để trống.'),
-  password: yup.string().required('Mật khẩu không được để trống.'),
-});
-
-const sampleUsers: IUser[] = [
-  {
-    displayName: 'Normal User',
-    password: 'user',
-    role: ROLE.USER,
-    username: 'user',
-  },
-  {
-    displayName: 'Tenant User',
-    password: 'tenant',
-    role: ROLE.TENANT_USER,
-    username: 'tenant',
-  },
-  {
-    displayName: 'Admin User',
-    password: 'admin',
-    role: ROLE.ADMIN,
-    username: 'admin',
-  },
-];
+import routersEndpoint from '@routers/routersEndpoint';
 
 function Login() {
   const navigate = useNavigate();
+
+  const schema = yup.object().shape({
+    username: yup.string().required('Tên đăng nhập không được để trống.'),
+    password: yup.string().required('Mật khẩu không được để trống.'),
+  });
 
   const {
     register,
@@ -55,36 +33,39 @@ function Login() {
   });
 
   React.useEffect(() => {
-    // const user = getUser();
-    // if (user) history.
+    const user = getUser();
+    if (user) navigate(routersEndpoint.home);
   }, []);
 
   const onSubmit = async (data: ILoginInput) => {
     try {
-      // const result: ISuccessResponse<IUser> = await login(data);
+      const user = await login(data);
 
-      // if (result.statusCode !== 'OK') {
-      //   setError('submitError', { type: 'custom', message: 'Wrong user name or password' });
-      //   return;
-      // }
+      switch (user.statusCode) {
+        case 'invalidCredentials':
+        case 'FAILED':
+          setError('submitError', { type: 'custom', message: user.message });
+          return;
 
-      const user = sampleUsers.find((v) => v.password === data.password && v.username === data.username);
+        case 'RequiredField':
+          Object.keys(user.message).forEach((v: any) => {
+            setError(v, { type: 'custom', message: user.message[v][0] });
+          });
+          return;
 
-      if (!user) {
-        setError('submitError', { type: 'custom', message: 'Sai tài khoản hoặc mật khẩu' });
-        return;
+        case 'OK':
+          setUserCookie(user.data);
+
+          navigate(routes.home);
+          reset();
+
+          return;
+
+        default:
+          throw new Error('Đã xảy ra lỗi');
       }
-
-      setUserCookie(user);
-
-      navigate(routes.home);
-
-      // setUserCookie(result.data);
-
-      // message.success('Login success');
-      reset();
     } catch (err) {
-      // message.error('Error!');
+      throw new Error('Đã xảy ra lỗi');
     }
   };
 

@@ -1,6 +1,6 @@
 export interface ISearch {
   offset: number;
-  size: number;
+  limit: number;
 }
 
 export type ValueOf<T> = T[keyof T];
