@@ -1,17 +1,45 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-
-import { IMedicine } from '@ts/tenant';
-import routersEndpoint from '@routers/routersEndpoint';
 import { Button } from 'antd';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+
+import { ICreateMedicine } from '@ts/medicine';
+import routersEndpoint from '@routers/routersEndpoint';
+
+import { create } from '@apis/medicine';
 
 function MedicineDetail() {
   const navigate = useNavigate();
 
+  const schema = yup.object().shape({
+    name: yup.string().required('Không được để trống.'),
+    symptoms: yup.string().required('Không được để trống.'),
+    medicineCode: yup.string().required('Không được để trống.'),
+    medicineName: yup.string().required('Không được để trống.'),
+    morbidness: yup.string().required('Không được để trống.'),
+    dosage: yup.string().required('Không được để trống.'),
+    specificDisease: yup.string().required('Không được để trống.'),
+    specificObject: yup.string().required('Không được để trống.'),
+    ingredients: yup.string().required('Không được để trống.'),
+    // note: yup.string().required('Không được để trống.'),
+  });
+
   //   const [detail] = useState<IMedicine>();
-  const { register } = useForm<IMedicine>();
-  const [file, setFile] = useState<any>('');
+  const {
+    register,
+    setError,
+    reset,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ICreateMedicine>({
+    // resolver: yupResolver(schema),
+  });
+  const [file, setFile] = useState<{ display: any; input: any }>({
+    display: undefined,
+    input: undefined,
+  });
 
   const handleShowImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
@@ -22,8 +50,49 @@ function MedicineDetail() {
     reader.readAsDataURL(files[0]);
 
     reader.onloadend = function () {
-      setFile(reader.result);
+      setFile({
+        display: reader.result,
+        input: files[0],
+      });
     };
+  };
+
+  const onSubmit = async (data: any) => {
+    try {
+      const form = new FormData();
+
+      Object.keys(data).forEach((k) => {
+        form.append(k, data[k]);
+      });
+
+      if (file.input) form.append('file', file.input);
+
+      const res = await create(form as any);
+
+      switch (res.statusCode) {
+        case 'invalidCredentials':
+        case 'FAILED':
+          setError('submitError', { type: 'custom', message: res.message });
+          return;
+
+        case 'RequiredField':
+          Object.keys(res.message).forEach((v: any) => {
+            setError(v, { type: 'custom', message: res.message[v][0] });
+          });
+          return;
+
+        case 'OK':
+          navigate(routersEndpoint.tenantManageMedicine);
+          reset();
+
+          return;
+
+        default:
+          throw new Error('Đã xảy ra lỗi');
+      }
+    } catch (err) {
+      throw new Error('Đã xảy ra lỗi');
+    }
   };
 
   return (
@@ -35,18 +104,22 @@ function MedicineDetail() {
       >
         Trờ lại
       </Button>
-      <form id="form_medicine">
+      <form id="form_medicine" onSubmit={handleSubmit(onSubmit)} className="form">
         <div className="form-input">
           <label htmlFor="name">
             <span className="label_title">Tên thuốc</span>
-            <input id="name" type="text" {...register('name')} />
+            <div>
+              <input id="name" type="text" {...register('medicineName')} />
+              <span className="error-message">{errors.medicineName?.message || ''}</span>
+            </div>
           </label>
         </div>
 
         <div className="form-input">
           <label htmlFor="medicineName">
             <span className="label_title">Bệnh điều trị</span>
-            <input id="medicineName" type="text" {...register('medicineName')} />
+            <input id="medicineName" type="text" {...register('specificDisease')} />
+            <span className="error-message">{errors.medicineName?.message || ''}</span>
           </label>
         </div>
 
@@ -54,6 +127,7 @@ function MedicineDetail() {
           <label htmlFor="medicineCode">
             <span className="label_title">Mã thuốc</span>
             <input id="medicineCode" type="text" {...register('medicineCode')} />
+            <span className="error-message">{errors.medicineCode?.message || ''}</span>
           </label>
         </div>
 
@@ -61,6 +135,7 @@ function MedicineDetail() {
           <label htmlFor="symptoms">
             <span className="label_title">Triệu chứng</span>
             <input id="symptoms" type="text" {...register('symptoms')} />
+            <span className="error-message">{errors.symptoms?.message || ''}</span>
           </label>
         </div>
 
@@ -68,6 +143,7 @@ function MedicineDetail() {
           <label htmlFor="ingredients">
             <span className="label_title">Thành phần chính</span>
             <input id="ingredients" type="text" {...register('ingredients')} />
+            <span className="error-message">{errors.ingredients?.message || ''}</span>
           </label>
         </div>
 
@@ -75,6 +151,7 @@ function MedicineDetail() {
           <label htmlFor="specificDisease">
             <span className="label_title">Công dụng</span>
             <input id="specificDisease" type="text" {...register('specificDisease')} />
+            <span className="error-message">{errors.specificDisease?.message || ''}</span>
           </label>
         </div>
 
@@ -82,6 +159,7 @@ function MedicineDetail() {
           <label htmlFor="dosage">
             <span className="label_title">Liều lượng</span>
             <input id="dosage" type="text" {...register('dosage')} />
+            <span className="error-message">{errors.dosage?.message || ''}</span>
           </label>
         </div>
 
@@ -89,6 +167,7 @@ function MedicineDetail() {
           <label htmlFor="specificObject">
             <span className="label_title">Độ tuổi</span>
             <input id="specificObject" type="text" {...register('specificObject')} />
+            <span className="error-message">{errors.specificObject?.message || ''}</span>
           </label>
         </div>
 
@@ -96,6 +175,7 @@ function MedicineDetail() {
           <label htmlFor="note">
             <span className="label_title">Ghi chú</span>
             <textarea id="note" {...register('note')} />
+            <span className="error-message">{errors.note?.message || ''}</span>
           </label>
         </div>
 
@@ -107,7 +187,7 @@ function MedicineDetail() {
             <input type="file" id="name" onChange={handleShowImage} />
           </label>
 
-          {file && <img src={file} alt="medicineImage" className="medicine_image" />}
+          {file.display && <img src={file.display} alt="medicineImage" className="medicine_image" />}
         </div>
 
         <div />

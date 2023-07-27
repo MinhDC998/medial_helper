@@ -1,31 +1,21 @@
 import React, { useState } from 'react';
 import { Button } from 'antd';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+import useFetch from '@customHooks/fetch';
+import useSearch from '@customHooks/search';
+
+import { list } from '@apis/morbidness';
 
 import { ISick } from '@ts/sick';
 import routersEndpoint from '@routers/routersEndpoint';
+import { ISearch } from '@/app/types/common/common';
 
 function SearchBySick() {
-  const test: ISick[] = [
-    {
-      id: 1,
-      name: 'Đau đầu',
-    },
-    {
-      id: 2,
-      name: 'Sổ mũi',
-    },
-    {
-      id: 3,
-      name: 'Chóng mặt',
-    },
-    {
-      id: 4,
-      name: 'Ho Khan',
-    },
-  ];
+  const navigate = useNavigate();
 
-  // const navigate = useNavigate();
+  const { inputSearch } = useSearch();
+  const { data } = useFetch<ISick, ISearch>(list, inputSearch);
 
   const [sicksSelected, setSicksSelected] = useState<string[]>([]);
 
@@ -35,6 +25,10 @@ function SearchBySick() {
 
   const handleRemoveSick = (sickData: string) => {
     setSicksSelected((prev) => prev.filter((v) => v !== sickData));
+  };
+
+  const handleSearch = () => {
+    navigate(routersEndpoint.searchBy.replace(':by', routersEndpoint.searchByMedicine), { state: { sicksSelected } });
   };
 
   return (
@@ -61,23 +55,25 @@ function SearchBySick() {
       </div>
 
       {sicksSelected.length > 0 && (
-        <Link to={routersEndpoint.searchBy.replace(':by', routersEndpoint.searchByMedicine)}>
-          <Button className="work-break">Tìm thuốc </Button>
-        </Link>
+        <Button className="work-break" onClick={handleSearch}>
+          Tìm thuốc
+        </Button>
       )}
 
       <div id="wrapper_symptom">
-        {test.map((v) => (
-          <div
-            className="symptom cursor-pointer"
-            key={v.id}
-            onClick={() => {
-              handleSelectSick(v.name);
-            }}
-          >
-            {v.name}
-          </div>
-        ))}
+        {data &&
+          data.statusCode === 'OK' &&
+          data.data.rows.map((v) => (
+            <div
+              className="symptom cursor-pointer"
+              key={v.id}
+              onClick={() => {
+                handleSelectSick(v.name);
+              }}
+            >
+              {v.name}
+            </div>
+          ))}
       </div>
     </div>
   );

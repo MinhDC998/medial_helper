@@ -1,7 +1,7 @@
 import React, { useState, FC } from 'react';
+import { Button, Modal, Table, message } from 'antd';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, Modal, Table, message } from 'antd';
 import * as yup from 'yup';
 
 import { ITenant } from '@ts/tenant';
@@ -20,8 +20,8 @@ interface IAdminDashboard {
 const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
   const { selectedTenant, handleNavigation, handleSelectTenant, searchComponent } = props;
 
-  const [search] = useSearch({});
-  const { data: tenants, reload } = useFetch<ITenant, {}>(list, search);
+  const { inputSearch, handle } = useSearch();
+  const { data, reload, isLoading } = useFetch<ITenant, {}>(list, inputSearch);
 
   const schema = yup.object().shape({
     name: yup.string().required('Tên không được để trống.'),
@@ -118,7 +118,8 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
       </div>
       <div id="wrapper_tenant">
         <Table
-          dataSource={(tenants && tenants.statusCode === 'OK' && tenants.data.rows) || []}
+          loading={isLoading}
+          dataSource={(data?.statusCode === 'OK' && data.data.rows) || []}
           columns={columns}
           style={{ marginTop: 12 }}
           rowKey="id"
@@ -129,6 +130,11 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
               handleSelectTenant(record);
             },
           })}
+          pagination={{
+            onChange: (page) => handle.handleChangePage(page - 1),
+            total: (data?.statusCode === 'OK' && data.data.count) || 0,
+            pageSize: inputSearch.limit || 0,
+          }}
         />
 
         <Modal

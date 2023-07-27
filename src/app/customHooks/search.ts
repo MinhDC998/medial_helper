@@ -8,18 +8,19 @@ interface ISearchFn {
   customChangeInputSearch: (data: any) => void;
 }
 
-export default <I>(input: I): [ISearch, ISearchFn] => {
+export default <I>(input?: I & Partial<ISearch>): { inputSearch: ISearch; handle: ISearchFn } => {
   const [inputSearch, setInputSearch] = useState<ISearch>({
-    ...input,
-    offset: 0,
-    limit: 10,
+    ...(input && input),
+    offset: input?.offset || 0,
+    limit: input?.limit || 10,
   });
 
   function handleChangeSize(limit: number): void {
     setInputSearch({ ...inputSearch, limit });
   }
+
   function handleChangePage(offset: number): void {
-    setInputSearch({ ...inputSearch, offset });
+    setInputSearch({ ...inputSearch, offset: offset * inputSearch.limit });
   }
 
   function handleChangeInputSearch(e: ChangeEvent<HTMLInputElement>): void {
@@ -32,13 +33,13 @@ export default <I>(input: I): [ISearch, ISearchFn] => {
     setInputSearch({ ...inputSearch, ...data });
   }
 
-  return [
+  return {
     inputSearch,
-    {
+    handle: {
       handleChangeInputSearch,
       handleChangeSize,
       handleChangePage,
       customChangeInputSearch,
     },
-  ];
+  };
 };

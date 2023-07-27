@@ -1,7 +1,11 @@
 import axios, { AxiosResponse } from 'axios';
-import { getUser } from '@utils/user';
+
+import { getUser, logout } from '@utils/user';
 import * as cookie from '@services/cookies';
 import { COMMON } from '@constants/common';
+import * as routes from '@routers/routersEndpoint';
+
+import { TCommonResponse } from '@ts/common/response';
 
 const sender = (): { get: any; post: any; put: any; del: any } => {
   const instance = axios.create({
@@ -16,20 +20,22 @@ const sender = (): { get: any; post: any; put: any; del: any } => {
   if (user) instance.defaults.headers.common.Authorization = `Bearer ${user.token}`;
   if (tenant) instance.defaults.headers.common['tid'] = tenant.id;
 
-  const handleResponse = async (res: any): Promise<any> =>
+  const handleResponse = async (res: AxiosResponse<TCommonResponse<any>>): Promise<any> =>
     new Promise((resolve, reject) => {
       if (res.status === 200 || res.status === 201) {
-        if (res.data.statusCode) {
-          resolve(res.data);
-          return;
+        switch (res.data.statusCode) {
+          case 'OK':
+            return resolve(res.data);
+
+          case 'CredentialError':
+            logout();
+            window.location.href = routes.default.login;
+            break;
+          default:
+            reject(new Error('Unknown Error'));
         }
 
         reject(res.data.message);
-        return;
-      }
-
-      if (res.status !== 200) {
-        reject(new Error(res.data.message));
         return;
       }
 

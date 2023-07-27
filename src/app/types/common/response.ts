@@ -18,7 +18,12 @@ export interface IListResponse<D> {
   statusCode: 'OK';
 }
 
-export type TCommonResponse<D> = ISuccessResponse<D> | IFailedResponse | IValidationError;
+export interface IJwtFailed {
+  message: string;
+  statusCode: 'CredentialError';
+}
+
+export type TCommonResponse<D> = ISuccessResponse<D> | IFailedResponse | IValidationError | IJwtFailed;
 export type TCommonListResponse<D> = IListResponse<D> | IListResponse<D> | IFailedResponse | IValidationError;
 
 export type TApiResponse<D> = Promise<TCommonResponse<D>>;
