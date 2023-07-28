@@ -65,11 +65,16 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
   ];
   const location = useLocation();
 
-  const { inputSearch, handle } = useSearch<TSearchMedicine>({
-    morbidness: location.state?.sicksSelected ? location.state?.sicksSelected.toString() : '',
-    name: '',
-  });
-  const { data, isLoading, reload } = useFetch<IMedicine, ISearch>(list, inputSearch);
+  const { debounceValue, handle } = useSearch<TSearchMedicine>(
+    {
+      morbidness: location.state?.sicksSelected ? location.state?.sicksSelected.toString() : '',
+      key: '',
+    },
+    { isUseDebounce: true },
+  );
+  const { data, isLoading, reload } = useFetch<IMedicine, ISearch>(list, debounceValue);
+
+  console.log(debounceValue);
 
   useEffect(() => {
     if (props.resetDataAt !== '') reload();
@@ -81,7 +86,7 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
         <input
           type="text"
           placeholder="Nhập tên hoặc thành phần thuốc"
-          name="name"
+          name="key"
           onChange={handle.handleChangeInputSearch}
         />
         <i className="fa fa-search fa-lg fa-fw" aria-hidden="true" />
@@ -93,10 +98,11 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
         columns={columns}
         style={{ marginTop: 12 }}
         scroll={{ x: 400 }}
+        rowKey="id"
         pagination={{
           onChange: (page) => handle.handleChangePage(page - 1),
           total: (data?.statusCode === 'OK' && data.data.count) || 0,
-          pageSize: inputSearch.limit || 0,
+          pageSize: debounceValue!.limit || 0,
         }}
       />
     </div>

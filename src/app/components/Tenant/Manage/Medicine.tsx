@@ -7,6 +7,7 @@ import SearchByMedicine from '@components/Search/searchByMedicine';
 import routersEndpoint from '@routers/routersEndpoint';
 
 import { importExcel } from '@apis/medicine';
+import { randomString } from '@utils/helper';
 
 import './styles.scss';
 
@@ -41,7 +42,7 @@ function ManageMedicine() {
     message.success('Thêm thành công');
     setFileList([]);
     toggleModal();
-    setReloadData(new Date().toDateString());
+    setReloadData(randomString());
   };
 
   const props: UploadProps = {

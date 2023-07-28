@@ -15,4 +15,4 @@ export interface ICreateMedicine extends IMedicine {
   submitError?: string;
 }
 
-export type TSearchMedicine = Pick<IMedicine, 'name' | 'morbidness'>;
+export type TSearchMedicine = Pick<IMedicine, 'morbidness'> & { key: string };

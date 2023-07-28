@@ -34,7 +34,7 @@ function MedicineDetail() {
     handleSubmit,
     formState: { errors },
   } = useForm<ICreateMedicine>({
-    // resolver: yupResolver(schema),
+    resolver: yupResolver(schema),
   });
   const [file, setFile] = useState<{ display: any; input: any }>({
     display: undefined,

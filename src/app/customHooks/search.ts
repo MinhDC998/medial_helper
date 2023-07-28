@@ -1,19 +1,52 @@
-import { useState, ChangeEvent } from 'react';
-import { ISearch } from '@appTypes/common/common';
+import { useState, ChangeEvent, useRef, useEffect } from 'react';
 
-interface ISearchFn {
+import { ISearch } from '@ts/common/common';
+
+type TUseSearch<I> = I & Partial<ISearch>;
+
+interface IUseSearchDebounce {
+  isUseDebounce: boolean;
+  delay?: number;
+}
+
+interface IResSearchFn {
   handleChangeInputSearch: (e: ChangeEvent<HTMLInputElement>) => void;
   handleChangeSize: (offset: number) => void;
   handleChangePage: (size: number) => void;
   customChangeInputSearch: (data: any) => void;
 }
 
-export default <I>(input?: I & Partial<ISearch>): { inputSearch: ISearch; handle: ISearchFn } => {
+interface IUseSearchRes {
+  inputSearch: ISearch;
+  handle: IResSearchFn;
+  debounceValue: ISearch;
+}
+
+export default <I>(input?: TUseSearch<I>, debounce?: IUseSearchDebounce): IUseSearchRes => {
   const [inputSearch, setInputSearch] = useState<ISearch>({
     ...(input && input),
     offset: input?.offset || 0,
     limit: input?.limit || 10,
   });
+
+  const [debounceValue, setDebounceValue] = useState(inputSearch);
+
+  const ref = useRef<any>(null);
+
+  useEffect(() => {
+    if (inputSearch.offset !== debounceValue.offset || inputSearch.limit !== debounceValue.limit)
+      setDebounceValue(inputSearch);
+
+    if (!debounce || !debounce.isUseDebounce) return;
+
+    ref.current = setTimeout(() => {
+      setDebounceValue(inputSearch);
+    }, debounce.delay || 500);
+
+    return () => {
+      clearTimeout(ref.current);
+    };
+  }, [inputSearch]);
 
   function handleChangeSize(limit: number): void {
     setInputSearch({ ...inputSearch, limit });
@@ -41,5 +74,6 @@ export default <I>(input?: I & Partial<ISearch>): { inputSearch: ISearch; handle
       handleChangePage,
       customChangeInputSearch,
     },
+    debounceValue,
   };
 };
