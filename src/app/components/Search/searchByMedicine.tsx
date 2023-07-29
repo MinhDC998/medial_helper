@@ -74,8 +74,6 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
   );
   const { data, isLoading, reload } = useFetch<IMedicine, ISearch>(list, debounceValue);
 
-  console.log(debounceValue);
-
   useEffect(() => {
     if (props.resetDataAt !== '') reload();
   }, [props.resetDataAt]);
@@ -100,9 +98,11 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
         scroll={{ x: 400 }}
         rowKey="id"
         pagination={{
-          onChange: (page) => handle.handleChangePage(page - 1),
+          onChange: (page, pageSize) => {
+            handle.customChangePagination(page - 1, pageSize);
+          },
           total: (data?.statusCode === 'OK' && data.data.count) || 0,
-          pageSize: debounceValue!.limit || 0,
+          pageSize: debounceValue.limit || 0,
         }}
       />
     </div>
