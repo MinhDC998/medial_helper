@@ -53,9 +53,16 @@ function ManageMedicine() {
       setFileList(newFileList);
     },
     beforeUpload: (file) => {
-      setFileList([file]);
-
-      return false;
+      console.log(file.type);
+      if (
+        file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+        file.type === 'application/vnd.ms-excel'
+      ) {
+        setFileList([file]);
+        return;
+      }
+      setFileList([]);
+      message.error('Vui lòng chọn đúng định dạng file');
     },
     fileList,
     multiple: false,

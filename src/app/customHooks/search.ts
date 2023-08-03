@@ -14,6 +14,7 @@ interface IResSearchFn {
   handleChangeSize: (offset: number) => void;
   handleChangePage: (size: number) => void;
   customChangeInputSearch: (data: any) => void;
+  customChangePagination: (offset: number, limit: number) => void;
 }
 
 interface IUseSearchRes {
@@ -34,8 +35,9 @@ export default <I>(input?: TUseSearch<I>, debounce?: IUseSearchDebounce): IUseSe
   const ref = useRef<any>(null);
 
   useEffect(() => {
-    if (inputSearch.offset !== debounceValue.offset || inputSearch.limit !== debounceValue.limit)
+    if (inputSearch.offset !== debounceValue.offset || inputSearch.limit !== debounceValue.limit) {
       setDebounceValue(inputSearch);
+    }
 
     if (!debounce || !debounce.isUseDebounce) return;
 
@@ -62,6 +64,10 @@ export default <I>(input?: TUseSearch<I>, debounce?: IUseSearchDebounce): IUseSe
     setInputSearch({ ...inputSearch, [name]: value });
   }
 
+  function customChangePagination(offset: number, limit: number) {
+    setInputSearch({ ...inputSearch, offset: offset * inputSearch.limit, limit });
+  }
+
   function customChangeInputSearch(data: I): void {
     setInputSearch({ ...inputSearch, ...data });
   }
@@ -73,6 +79,7 @@ export default <I>(input?: TUseSearch<I>, debounce?: IUseSearchDebounce): IUseSe
       handleChangeSize,
       handleChangePage,
       customChangeInputSearch,
+      customChangePagination,
     },
     debounceValue,
   };

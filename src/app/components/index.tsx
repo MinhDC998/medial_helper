@@ -4,8 +4,10 @@ import type { MenuProps } from 'antd';
 import { Layout, Menu, theme, Dropdown, Button, Space } from 'antd';
 import { Outlet, useNavigate } from 'react-router-dom';
 
-import { getUser } from '@utils/user';
+import { getUser, logout } from '@utils/user';
+import { COMMON } from '@constants/common';
 import routersEndpoint from '@routers/routersEndpoint';
+import * as cookie from '@services/cookies';
 
 import './styles.scss';
 import '@public/css/core.scss';
@@ -36,6 +38,8 @@ export default function App() {
   }));
 
   const handleMenuClick: MenuProps['onClick'] = () => {
+    cookie.default.remove(COMMON.COOKIE.TENANT);
+    logout();
     navigate(routersEndpoint.login);
   };
 
