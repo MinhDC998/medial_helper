@@ -9,7 +9,8 @@ import { TCommonResponse } from '@ts/common/response';
 
 const sender = (): { get: any; post: any; put: any; del: any } => {
   const instance = axios.create({
-    baseURL: 'http://localhost:3000',
+    // @ts-ignore
+    baseURL: import.meta.env.VITE_BASE_URL || '',
   });
 
   const abortController = new AbortController();
@@ -32,10 +33,9 @@ const sender = (): { get: any; post: any; put: any; del: any } => {
             window.location.href = routes.default.login;
             break;
           default:
-            reject(new Error('Unknown Error'));
+            reject(res.data);
         }
 
-        reject(res.data.message);
         return;
       }
 

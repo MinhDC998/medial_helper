@@ -13,6 +13,7 @@ import { login } from '@apis/user';
 
 import './styles.scss';
 import routersEndpoint from '@routers/routersEndpoint';
+import { isFailedRes } from '@/app/utils/helper';
 
 function Login() {
   const navigate = useNavigate();
@@ -41,30 +42,28 @@ function Login() {
     try {
       const user = await login(data);
 
-      switch (user.statusCode) {
-        case 'invalidCredentials':
-        case 'FAILED':
-          setError('submitError', { type: 'custom', message: user.message });
-          return;
-
-        case 'RequiredField':
-          Object.keys(user.message).forEach((v: any) => {
-            setError(v, { type: 'custom', message: user.message[v][0] });
-          });
-          return;
-
-        case 'OK':
-          setUserCookie(user.data);
-
-          navigate(routes.home);
-          reset();
-
-          return;
-
-        default:
-          throw new Error('Đã xảy ra lỗi');
+      if (user.statusCode === 'OK') {
+        setUserCookie(user.data);
+        navigate(routes.home);
+        reset();
       }
     } catch (err) {
+      if (isFailedRes(err)) {
+        switch (err.statusCode) {
+          case 'invalidCredentials':
+          case 'FAILED':
+            setError('submitError', { type: 'custom', message: err.message });
+            return;
+
+          case 'RequiredField':
+            Object.keys(err.message).forEach((v: any) => {
+              // @ts-ignore
+              setError(v, { type: 'custom', message: err.message[v][0] });
+            });
+            return;
+        }
+      }
+
       throw new Error('Đã xảy ra lỗi');
     }
   };
