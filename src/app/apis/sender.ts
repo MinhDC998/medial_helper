@@ -59,7 +59,7 @@ const sender = (): { get: any; post: any; put: any; del: any } => {
     instance.post(route, payload, { signal: abortController.signal }).then(handleResponse).catch(handleError);
 
   const put = async (route: string, payload: Record<string, any>): Promise<AxiosResponse<any, any>> =>
-    instance.put(route, { signal: abortController.signal }, payload).then(handleResponse).catch(handleError);
+    instance.put(route, payload, { signal: abortController.signal }).then(handleResponse).catch(handleError);
 
   const del = async (route: string): Promise<AxiosResponse<any, any>> =>
     instance.delete(route, { signal: abortController.signal }).then(handleResponse).catch(handleError);

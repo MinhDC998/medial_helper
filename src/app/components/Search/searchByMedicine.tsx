@@ -1,14 +1,17 @@
 import React, { useEffect } from 'react';
-import { Table } from 'antd';
+import { Popconfirm, Table, message } from 'antd';
 import { useLocation } from 'react-router-dom';
 
 import useFetch from '@customHooks/fetch';
 import useSearch from '@customHooks/search';
 
-import { list } from '@apis/medicine';
+import { list, remove } from '@apis/medicine';
 
 import { IMedicine, TSearchMedicine } from '@ts/medicine';
 import { ISearch } from '@ts/common/common';
+import { DeleteTwoTone, EditTwoTone } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
+import routersEndpoint from '@/app/routers/routersEndpoint';
 
 function SearchByMedicine(props: { resetDataAt?: string }) {
   const columns = [
@@ -62,6 +65,31 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
       key: 'note',
       width: 200,
     },
+    {
+      title: 'Action',
+      dataIndex: '',
+      key: 'x',
+      width: 50,
+      render: (v: IMedicine) => (
+        <>
+          <Link
+            to={routersEndpoint.tenantManageMedicineById.replace(':medicineId', v.id.toString())}
+            style={{ marginRight: 12 }}
+          >
+            <EditTwoTone rev={''} />
+          </Link>
+          <Popconfirm
+            title="Delete the task"
+            description="Are you sure to delete this task?"
+            onConfirm={() => handleDelete(v.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <DeleteTwoTone rev={''} twoToneColor={'red'} />
+          </Popconfirm>
+        </>
+      ),
+    },
   ];
   const location = useLocation();
 
@@ -77,6 +105,14 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
   useEffect(() => {
     if (props.resetDataAt !== '') reload();
   }, [props.resetDataAt]);
+
+  const handleDelete = async (id: number) => {
+    const res = await remove(id);
+    if (res.statusCode === 'OK') {
+      reload();
+      message.success('Xóa thành công');
+    }
+  };
 
   return (
     <div style={{ marginTop: 24 }}>

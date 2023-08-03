@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from 'antd';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
-import { ICreateMedicine } from '@ts/medicine';
+import { ICreateMedicine, IMedicine } from '@ts/medicine';
 import routersEndpoint from '@routers/routersEndpoint';
 
-import { create } from '@apis/medicine';
+import { create, detail as getDetail, update } from '@apis/medicine';
 
 function MedicineDetail() {
   const navigate = useNavigate();
+  const params = useParams();
 
   const schema = yup.object().shape({
     name: yup.string().required('Không được để trống.'),
@@ -26,16 +27,30 @@ function MedicineDetail() {
     // note: yup.string().required('Không được để trống.'),
   });
 
-  //   const [detail] = useState<IMedicine>();
   const {
     register,
     setError,
     reset,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<ICreateMedicine>({
     resolver: yupResolver(schema),
   });
+
+  useEffect(() => {
+    if (params.medicineId && typeof +params.medicineId === 'number') {
+      getDetail(+params.medicineId).then((res) => {
+        if (res.statusCode === 'OK') {
+          Object.keys(res.data).forEach((v) => {
+            // @ts-ignore
+            setValue(v, res.data[v]);
+          });
+        }
+      });
+    }
+  }, [params.medicineId]);
+
   const [file, setFile] = useState<{ display: any; input: any }>({
     display: undefined,
     input: undefined,
@@ -67,7 +82,9 @@ function MedicineDetail() {
 
       if (file.input) form.append('file', file.input);
 
-      const res = await create(form as any);
+      const caller = params?.medicineId ? update(+params.medicineId, form as any) : create(form as any);
+
+      const res = await caller;
 
       switch (res.statusCode) {
         case 'invalidCredentials':
@@ -142,7 +159,7 @@ function MedicineDetail() {
         <div className="form-input">
           <label htmlFor="ingredients">
             <span className="label_title">Thành phần chính</span>
-            <input id="ingredients" type="text" {...register('ingredients')} />
+            <textarea id="ingredients" {...register('ingredients')} />
             <span className="error-message">{errors.ingredients?.message || ''}</span>
           </label>
         </div>
@@ -150,7 +167,7 @@ function MedicineDetail() {
         <div className="form-input">
           <label htmlFor="specificDisease">
             <span className="label_title">Công dụng</span>
-            <input id="specificDisease" type="text" {...register('specificDisease')} />
+            <textarea id="specificDisease" {...register('specificDisease')} />
             <span className="error-message">{errors.specificDisease?.message || ''}</span>
           </label>
         </div>
@@ -158,7 +175,7 @@ function MedicineDetail() {
         <div className="form-input">
           <label htmlFor="dosage">
             <span className="label_title">Liều lượng</span>
-            <input id="dosage" type="text" {...register('dosage')} />
+            <textarea id="dosage" {...register('dosage')} />
             <span className="error-message">{errors.dosage?.message || ''}</span>
           </label>
         </div>
@@ -193,7 +210,7 @@ function MedicineDetail() {
         <div />
 
         <div className="form-input">
-          <input type="submit" value="Lưu" className="btn_confirm" />
+          <input type="submit" value="Lưu" className="btn_confirm cursor-pointer" />
         </div>
       </form>
     </div>

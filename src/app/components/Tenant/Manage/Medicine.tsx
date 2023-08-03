@@ -10,6 +10,7 @@ import { importExcel } from '@apis/medicine';
 import { randomString } from '@utils/helper';
 
 import './styles.scss';
+import { Link } from 'react-router-dom';
 
 function ManageMedicine() {
   const navigate = useNavigate();
@@ -71,13 +72,9 @@ function ManageMedicine() {
   return (
     <div className="main_content">
       <div id="wrapper_btn">
-        <Button
-          onClick={() => {
-            navigate(routersEndpoint.tenantManageMedicineById);
-          }}
-        >
-          Thêm mới
-        </Button>
+        <Link to={routersEndpoint.tenantManageMedicineById.replace(':medicineId', 'tao-moi')}>
+          <Button>Thêm mới</Button>
+        </Link>
         <Button onClick={toggleModal}>Import Excel</Button>
       </div>
 

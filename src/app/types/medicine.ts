@@ -1,4 +1,5 @@
 export interface IMedicine {
+  id: number;
   name: string;
   symptoms: string;
   medicineCode: string;

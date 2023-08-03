@@ -1,12 +1,15 @@
 import React, { useState, FC } from 'react';
-import { Button, Modal, Table, message } from 'antd';
+import { Button, Modal, Table, message, Popconfirm } from 'antd';
+import { DeleteTwoTone, EditTwoTone } from '@ant-design/icons';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 import { ITenant } from '@ts/tenant';
+
 import routersEndpoint from '@routers/routersEndpoint';
-import { create, list } from '@/app/apis/tenant';
+import { create, list, remove, update } from '@/app/apis/tenant';
+
 import useFetch from '@customHooks/fetch';
 import useSearch from '@customHooks/search';
 
@@ -27,12 +30,15 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
     name: yup.string().required('Tên không được để trống.'),
   });
 
+  const [edit, setEdit] = useState<ITenant>();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     setError,
     reset,
+    setValue,
   } = useForm<{ name: string }>({
     resolver: yupResolver(schema),
   });
@@ -47,16 +53,50 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
     },
     {
       title: 'Tên',
-      dataIndex: 'name',
-      key: 'name',
+      render: (v: ITenant) => <span onClick={() => handleSelectTenant(v)}> {v.name} </span>,
+    },
+    {
+      title: 'Action',
+      dataIndex: '',
+      key: 'x',
+      width: 50,
+      render: (v: ITenant) => (
+        <>
+          <EditTwoTone rev={''} style={{ marginRight: 12 }} onClick={() => handleEdit(v)} />
+          <Popconfirm
+            title="Delete the task"
+            description="Are you sure to delete this task?"
+            onConfirm={() => handleDelete(v.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <DeleteTwoTone rev={''} twoToneColor={'red'} />
+          </Popconfirm>
+        </>
+      ),
     },
   ];
+
+  const handleDelete = async (id: number) => {
+    const res = await remove(id);
+    if (res.statusCode === 'OK') {
+      reload();
+      message.success('Xóa thành công');
+    }
+  };
+
+  const handleEdit = (data: ITenant) => {
+    toggleModal();
+    setEdit(data);
+    setValue('name', data.name);
+  };
 
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   const onSubmit = async (data: { name: string }) => {
     try {
-      const res = await create(data);
+      const caller = !edit ? create(data) : update(edit!.id, data as ITenant);
+      const res = await caller;
 
       switch (res.statusCode) {
         case 'invalidCredentials':
@@ -89,6 +129,7 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
   const toggleModal = () => {
     setIsOpenModal(!isOpenModal);
     reset();
+    setEdit(undefined);
   };
 
   return selectedTenant ? (
@@ -125,11 +166,11 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
           rowKey="id"
           rowClassName="cursor-pointer"
           scroll={{ x: 996 }}
-          onRow={(record) => ({
-            onClick: () => {
-              handleSelectTenant(record);
-            },
-          })}
+          // onRow={(record) => ({
+          //   onClick: () => {
+          //     handleSelectTenant(record);
+          //   },
+          // })}
           pagination={{
             onChange: (page) => handle.handleChangePage(page - 1),
             total: (data?.statusCode === 'OK' && data.data.count) || 0,
@@ -152,8 +193,8 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
         >
           <form onSubmit={handleSubmit(onSubmit)} id="tenantForm" className="form" style={{ margin: 0, padding: 0 }}>
             <div className={`form-group ${errors.name ? 'error-form-group' : ''}`}>
-              <label htmlFor="username">Tên nhà thuốc</label>
-              <input type="text" id="username" {...register('name')} />
+              <label htmlFor="name">Tên nhà thuốc</label>
+              <input type="text" id="name" {...register('name')} />
 
               <span className="error-message">{errors.name ? errors.name.message : ''}</span>
             </div>
