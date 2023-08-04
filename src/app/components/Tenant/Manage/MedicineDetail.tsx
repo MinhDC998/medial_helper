@@ -35,15 +35,17 @@ function MedicineDetail() {
     formState: { errors },
     setValue,
   } = useForm<ICreateMedicine>({
-    resolver: yupResolver(schema),
+    // resolver: yupResolver(schema),
   });
 
   useEffect(() => {
-    if (params.medicineId && typeof +params.medicineId === 'number') {
+    console.log(params.medicineId);
+    if (params.medicineId && !Number.isNaN(+params.medicineId)) {
+      console.log(typeof +params.medicineId !== 'string');
       getDetail(+params.medicineId).then((res) => {
         if (res.statusCode === 'OK') {
           Object.keys(res.data).forEach((v) => {
-            // @ts-ignore
+            // @ts-expect-error
             setValue(v, res.data[v]);
           });
         }
@@ -82,7 +84,10 @@ function MedicineDetail() {
 
       if (file.input) form.append('file', file.input);
 
-      const caller = params?.medicineId ? update(+params.medicineId, form as any) : create(form as any);
+      const caller =
+        params?.medicineId && !Number.isNaN(+params.medicineId)
+          ? update(+params.medicineId, form as any)
+          : create(form as any);
 
       const res = await caller;
 
