@@ -7,6 +7,7 @@ export interface IUser {
   displayName: string;
   role: ValueOf<typeof ROLE>;
   token: string;
+  tenantId?: number;
 }
 
 export interface ILoginInput {

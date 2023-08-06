@@ -27,7 +27,7 @@ function Home(): JSX.Element {
     setSelectedTenant(tenantData);
 
     if (tenantData) {
-      cookie.default.set(tenantData, COMMON.COOKIE.TENANT);
+      cookie.default.set(tenantData.id, COMMON.COOKIE.TENANT);
     } else {
       cookie.default.remove(COMMON.COOKIE.TENANT);
     }

@@ -7,6 +7,10 @@ export default ({ mode }) => {
 
   return defineConfig({
     plugins: [react()],
+    base: './',
+    build: {
+      target: 'esnext',
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),

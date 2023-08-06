@@ -5,7 +5,7 @@ import { Button } from 'antd';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
-import { ICreateMedicine, IMedicine } from '@ts/medicine';
+import { ICreateMedicine } from '@ts/medicine';
 import routersEndpoint from '@routers/routersEndpoint';
 
 import { create, detail as getDetail, update } from '@apis/medicine';
@@ -15,7 +15,7 @@ function MedicineDetail() {
   const params = useParams();
 
   const schema = yup.object().shape({
-    name: yup.string().required('Không được để trống.'),
+    name: yup.string().notRequired(),
     symptoms: yup.string().required('Không được để trống.'),
     medicineCode: yup.string().required('Không được để trống.'),
     medicineName: yup.string().required('Không được để trống.'),
@@ -24,7 +24,7 @@ function MedicineDetail() {
     specificDisease: yup.string().required('Không được để trống.'),
     specificObject: yup.string().required('Không được để trống.'),
     ingredients: yup.string().required('Không được để trống.'),
-    // note: yup.string().required('Không được để trống.'),
+    note: yup.string().notRequired(),
   });
 
   const {
@@ -35,13 +35,11 @@ function MedicineDetail() {
     formState: { errors },
     setValue,
   } = useForm<ICreateMedicine>({
-    // resolver: yupResolver(schema),
+    resolver: yupResolver(schema),
   });
 
   useEffect(() => {
-    console.log(params.medicineId);
     if (params.medicineId && !Number.isNaN(+params.medicineId)) {
-      console.log(typeof +params.medicineId !== 'string');
       getDetail(+params.medicineId).then((res) => {
         if (res.statusCode === 'OK') {
           Object.keys(res.data).forEach((v) => {
@@ -79,7 +77,7 @@ function MedicineDetail() {
       const form = new FormData();
 
       Object.keys(data).forEach((k) => {
-        form.append(k, data[k]);
+        form.append(k, data[k] || 0);
       });
 
       if (file.input) form.append('file', file.input);
@@ -138,10 +136,10 @@ function MedicineDetail() {
         </div>
 
         <div className="form-input">
-          <label htmlFor="medicineName">
+          <label htmlFor="morbidness">
             <span className="label_title">Bệnh điều trị</span>
-            <input id="medicineName" type="text" {...register('specificDisease')} />
-            <span className="error-message">{errors.medicineName?.message || ''}</span>
+            <input id="morbidness" type="text" {...register('morbidness')} />
+            <span className="error-message">{errors.morbidness?.message || ''}</span>
           </label>
         </div>
 

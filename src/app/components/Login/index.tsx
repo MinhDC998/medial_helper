@@ -13,7 +13,9 @@ import { login } from '@apis/user';
 
 import './styles.scss';
 import routersEndpoint from '@routers/routersEndpoint';
-import { isFailedRes } from '@/app/utils/helper';
+import { isFailedRes } from '@utils/helper';
+import { COMMON } from '@constants/common';
+import * as cookie from '@services/cookies';
 
 function Login() {
   const navigate = useNavigate();
@@ -45,9 +47,16 @@ function Login() {
       if (user.statusCode === 'OK') {
         setUserCookie(user.data);
         navigate(routes.home);
+        console.log(user);
+        if (user.data?.tenantId) {
+          cookie.default.set(user.data.tenantId, COMMON.COOKIE.TENANT);
+        } else {
+          cookie.default.remove(COMMON.COOKIE.TENANT);
+        }
         reset();
       }
     } catch (err) {
+      console.log({ err });
       if (isFailedRes(err)) {
         switch (err.statusCode) {
           case 'invalidCredentials':
@@ -57,7 +66,7 @@ function Login() {
 
           case 'RequiredField':
             Object.keys(err.message).forEach((v: any) => {
-              // @ts-ignore
+              // @ts-expect-error
               setError(v, { type: 'custom', message: err.message[v][0] });
             });
             return;

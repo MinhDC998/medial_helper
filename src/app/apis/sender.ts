@@ -1,32 +1,31 @@
 import axios, { AxiosResponse } from 'axios';
 
 import { getUser, logout } from '@utils/user';
-import * as cookie from '@services/cookies';
-import { COMMON } from '@constants/common';
 import * as routes from '@routers/routersEndpoint';
 
 import { TCommonResponse } from '@ts/common/response';
 
 const sender = (): { get: any; post: any; put: any; del: any } => {
   const instance = axios.create({
-    // @ts-ignore
+    // @ts-expect-error
     baseURL: import.meta.env.VITE_BASE_URL || '',
   });
 
   const abortController = new AbortController();
 
   const user = getUser();
-  const tenant = cookie.default.get(COMMON.COOKIE.TENANT);
 
   if (user) instance.defaults.headers.common.Authorization = `Bearer ${user.token}`;
-  if (tenant) instance.defaults.headers.common['tid'] = tenant.id;
+  if (user?.tenantId) instance.defaults.headers.common.tid = user.tenantId;
 
   const handleResponse = async (res: AxiosResponse<TCommonResponse<any>>): Promise<any> =>
     new Promise((resolve, reject) => {
       if (res.status === 200 || res.status === 201) {
         switch (res.data.statusCode) {
-          case 'OK':
-            return resolve(res.data);
+          case 'OK': {
+            resolve(res.data);
+            return;
+          }
 
           case 'CredentialError':
             logout();

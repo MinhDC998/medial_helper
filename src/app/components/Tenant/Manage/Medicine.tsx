@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button, message, Upload, Modal } from 'antd';
 import type { RcFile, UploadFile, UploadProps } from 'antd/es/upload/interface';
 
@@ -8,9 +8,10 @@ import routersEndpoint from '@routers/routersEndpoint';
 
 import { importExcel } from '@apis/medicine';
 import { randomString } from '@utils/helper';
+import { getUser } from '@utils/user';
+import role from '@constants/role';
 
 import './styles.scss';
-import { Link } from 'react-router-dom';
 
 function ManageMedicine() {
   const navigate = useNavigate();
@@ -71,12 +72,14 @@ function ManageMedicine() {
 
   return (
     <div className="main_content">
-      <div id="wrapper_btn">
-        <Link to={routersEndpoint.tenantManageMedicineById.replace(':medicineId', 'tao-moi')}>
-          <Button>Thêm mới</Button>
-        </Link>
-        <Button onClick={toggleModal}>Import Excel</Button>
-      </div>
+      {+getUser().role === role.TENANT_USER && (
+        <div id="wrapper_btn">
+          <Link to={routersEndpoint.tenantManageMedicineById.replace(':medicineId', 'tao-moi')}>
+            <Button>Thêm mới</Button>
+          </Link>
+          <Button onClick={toggleModal}>Import Excel</Button>
+        </div>
+      )}
 
       <SearchByMedicine resetDataAt={reloadData} />
 

@@ -5,13 +5,15 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
-import { ITenant } from '@ts/tenant';
+import ROLE from '@constants/role';
+import { getUser } from '@utils/user';
 
+import { ITenant } from '@ts/tenant';
 import routersEndpoint from '@routers/routersEndpoint';
-import { create, list, remove, update } from '@/app/apis/tenant';
 
 import useFetch from '@customHooks/fetch';
 import useSearch from '@customHooks/search';
+import { create, list, remove, update } from '@apis/tenant';
 
 interface IAdminDashboard {
   selectedTenant: ITenant | undefined;
@@ -25,6 +27,8 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
 
   const { inputSearch, handle } = useSearch();
   const { data, reload, isLoading } = useFetch<ITenant, {}>(list, inputSearch);
+
+  const user = getUser();
 
   const schema = yup.object().shape({
     name: yup.string().required('Tên không được để trống.'),
@@ -53,7 +57,15 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
     },
     {
       title: 'Tên',
-      render: (v: ITenant) => <span onClick={() => handleSelectTenant(v)}> {v.name} </span>,
+      render: (v: ITenant) => (
+        <span
+          onClick={() => {
+            handleSelectTenant(v);
+          }}
+        >
+          {v.name}
+        </span>
+      ),
     },
     {
       title: 'Action',
@@ -62,15 +74,21 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
       width: 50,
       render: (v: ITenant) => (
         <>
-          <EditTwoTone rev={''} style={{ marginRight: 12 }} onClick={() => handleEdit(v)} />
+          <EditTwoTone
+            rev=""
+            style={{ marginRight: 12 }}
+            onClick={() => {
+              handleEdit(v);
+            }}
+          />
           <Popconfirm
             title="Delete the task"
             description="Are you sure to delete this task?"
-            onConfirm={() => handleDelete(v.id)}
+            onConfirm={async () => handleDelete(v.id)}
             okText="Yes"
             cancelText="No"
           >
-            <DeleteTwoTone rev={''} twoToneColor={'red'} />
+            <DeleteTwoTone rev="" twoToneColor="red" />
           </Popconfirm>
         </>
       ),
@@ -95,7 +113,7 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
 
   const onSubmit = async (data: { name: string }) => {
     try {
-      const caller = !edit ? create(data) : update(edit!.id, data as ITenant);
+      const caller = !edit ? create(data) : update(edit.id, data as ITenant);
       const res = await caller;
 
       switch (res.statusCode) {
@@ -138,25 +156,17 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
         Bạn đang chọn chi nhánh:
         <strong>{selectedTenant?.name}</strong>
       </p>
-
-      <div
-        className="button_select cursor-pointer"
-        onClick={() => {
-          handleNavigation(routersEndpoint.tenantManageMedicine.replace(':id', selectedTenant!.id.toString()));
-        }}
-      >
-        Quản lý danh mục thuốc
-      </div>
-
       {searchComponent}
 
       <div className="button_select cursor-pointer"> Quản lý người dùng </div>
     </div>
   ) : (
     <>
-      <div id="wrapper_btn">
-        <Button onClick={toggleModal}>Thêm mới</Button>
-      </div>
+      {+user.role === ROLE.ADMIN && (
+        <div id="wrapper_btn">
+          <Button onClick={toggleModal}>Thêm mới</Button>
+        </div>
+      )}
       <div id="wrapper_tenant">
         <Table
           loading={isLoading}
@@ -172,7 +182,9 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
           //   },
           // })}
           pagination={{
-            onChange: (page) => handle.handleChangePage(page - 1),
+            onChange: (page) => {
+              handle.handleChangePage(page - 1);
+            },
             total: (data?.statusCode === 'OK' && data.data.count) || 0,
             pageSize: inputSearch.limit || 0,
           }}
