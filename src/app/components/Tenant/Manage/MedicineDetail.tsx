@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
@@ -81,11 +81,9 @@ function MedicineDetail() {
       });
 
       if (file.input) form.append('file', file.input);
+      const isUpdate = params?.medicineId && !Number.isNaN(+params.medicineId);
 
-      const caller =
-        params?.medicineId && !Number.isNaN(+params.medicineId)
-          ? update(+params.medicineId, form as any)
-          : create(form as any);
+      const caller = isUpdate ? update(+!params.medicineId, form as any) : create(form as any);
 
       const res = await caller;
 
@@ -103,6 +101,7 @@ function MedicineDetail() {
 
         case 'OK':
           navigate(routersEndpoint.tenantManageMedicine);
+          message.success(isUpdate ? 'Cập nhật thành công' : 'Thêm mới thành công');
           reset();
 
           return;

@@ -9,7 +9,6 @@ import ROLE from '@constants/role';
 import { getUser } from '@utils/user';
 
 import { ITenant } from '@ts/tenant';
-import routersEndpoint from '@routers/routersEndpoint';
 
 import useFetch from '@customHooks/fetch';
 import useSearch from '@customHooks/search';
@@ -23,7 +22,7 @@ interface IAdminDashboard {
 }
 
 const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
-  const { selectedTenant, handleNavigation, handleSelectTenant, searchComponent } = props;
+  const { selectedTenant, handleSelectTenant, searchComponent } = props;
 
   const { inputSearch, handle } = useSearch();
   const { data, reload, isLoading } = useFetch<ITenant, {}>(list, inputSearch);
@@ -150,7 +149,7 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
     setEdit(undefined);
   };
 
-  return selectedTenant ? (
+  return selectedTenant && +user.role === ROLE.ADMIN ? (
     <div id="wrapper_selection">
       <p>
         Bạn đang chọn chi nhánh:

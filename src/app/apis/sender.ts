@@ -2,8 +2,10 @@ import axios, { AxiosResponse } from 'axios';
 
 import { getUser, logout } from '@utils/user';
 import * as routes from '@routers/routersEndpoint';
+import * as cookie from '@services/cookies';
 
 import { TCommonResponse } from '@ts/common/response';
+import { COMMON } from '@constants/common';
 
 const sender = (): { get: any; post: any; put: any; del: any } => {
   const instance = axios.create({
@@ -14,9 +16,10 @@ const sender = (): { get: any; post: any; put: any; del: any } => {
   const abortController = new AbortController();
 
   const user = getUser();
+  const tenant = cookie.default.get(COMMON.COOKIE.TENANT);
 
   if (user) instance.defaults.headers.common.Authorization = `Bearer ${user.token}`;
-  if (user?.tenantId) instance.defaults.headers.common.tid = user.tenantId;
+  if (user?.tenantId || tenant) instance.defaults.headers.common.tid = user.tenantId ?? tenant;
 
   const handleResponse = async (res: AxiosResponse<TCommonResponse<any>>): Promise<any> =>
     new Promise((resolve, reject) => {

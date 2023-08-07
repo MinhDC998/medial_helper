@@ -19,7 +19,7 @@ function Home(): JSX.Element {
 
   useEffect(() => {
     const tenant = cookie.default.get(COMMON.COOKIE.TENANT);
-    if (tenant) setSelectedTenant(tenant);
+    if (tenant && +user().role === UserRole.ADMIN) setSelectedTenant(tenant);
   }, []);
 
   const handleSelectTenant = (tenantData: ITenant | undefined) => {
@@ -67,7 +67,7 @@ function Home(): JSX.Element {
         <div
           className="button_select cursor-pointer"
           onClick={() => {
-            handleNavigation(`${routersEndpoint.searchBy}`.replace(':by', routersEndpoint.searchByMedicine));
+            handleNavigation(routersEndpoint.tenantManageMedicine);
           }}
         >
           Truy vấn dữ liệu thuốc

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Popconfirm, Table, message } from 'antd';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
+import { DeleteTwoTone, EditTwoTone } from '@ant-design/icons';
 
 import useFetch from '@customHooks/fetch';
 import useSearch from '@customHooks/search';
@@ -9,9 +10,10 @@ import { list, remove } from '@apis/medicine';
 
 import { IMedicine, TSearchMedicine } from '@ts/medicine';
 import { ISearch } from '@ts/common/common';
-import { DeleteTwoTone, EditTwoTone } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
-import routersEndpoint from '@/app/routers/routersEndpoint';
+import { getUser as user } from '@utils/user';
+import UserRole from '@constants/role';
+
+import routersEndpoint from '@routers/routersEndpoint';
 
 function SearchByMedicine(props: { resetDataAt?: string }) {
   const columns = [
@@ -70,27 +72,23 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
       dataIndex: '',
       key: 'x',
       width: 50,
-      render: (v: IMedicine) => (
-        <>
-          <Link
-            to={routersEndpoint.tenantManageMedicineById.replace(':medicineId', v.id.toString())}
-            style={{ marginRight: 12 }}
-          >
-            <EditTwoTone rev={''} />
-          </Link>
-          <Popconfirm
-            title="Delete the task"
-            description="Are you sure to delete this task?"
-            onConfirm={() => handleDelete(v.id)}
-            okText="Yes"
-            cancelText="No"
-          >
-            <DeleteTwoTone rev={''} twoToneColor={'red'} />
-          </Popconfirm>
-        </>
-      ),
+      render: (v: IMedicine) =>
+        +user().role === UserRole.TENANT_USER && (
+          <>
+            <Link
+              to={routersEndpoint.tenantManageMedicineById.replace(':medicineId', v.id.toString())}
+              style={{ marginRight: 12 }}
+            >
+              <EditTwoTone rev />
+            </Link>
+            <Popconfirm title="Xóa" onConfirm={async () => handleDelete(v.id)} okText="Xóa" cancelText="Không">
+              <DeleteTwoTone rev twoToneColor="red" />
+            </Popconfirm>
+          </>
+        ),
     },
   ];
+
   const location = useLocation();
 
   const { debounceValue, handle } = useSearch<TSearchMedicine>(

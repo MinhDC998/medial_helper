@@ -34,5 +34,6 @@ module.exports = {
     '@typescript-eslint/no-misused-promises': 0,
     'no-plusplus': 0,
     'react-hooks/exhaustive-deps': 0,
+    'react/function-component-definition': 0,
   },
 };

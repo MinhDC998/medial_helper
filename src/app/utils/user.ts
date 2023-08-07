@@ -6,6 +6,7 @@ export const getUser = (): IUser => cookieServices.default.get(COMMON.COOKIE.USE
 
 export const logout = (): void => {
   cookieServices.default.remove(COMMON.COOKIE.USER);
+  cookieServices.default.remove(COMMON.COOKIE.TENANT);
 };
 
 export const login = (user: IUser): void => {
