@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect } from 'react';
 import { TCommonListResponse } from '@appTypes/common/response';
 import { randomString } from '@utils/helper';
 
@@ -13,7 +13,9 @@ const useFetch = <D, I>(apiFetch: any, input: I): IUseFetch<D> => {
   const [data, setData] = useState<TCommonListResponse<D>>();
   const [load, setLoad] = useState('');
 
-  const reload = () => setLoad(randomString());
+  const reload = () => {
+    setLoad(randomString());
+  };
 
   useEffect(() => {
     const controller = new AbortController();

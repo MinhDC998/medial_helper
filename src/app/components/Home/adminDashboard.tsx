@@ -74,7 +74,7 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
       render: (v: ITenant) => (
         <>
           <EditTwoTone
-            rev=""
+            rev="true"
             style={{ marginRight: 12 }}
             onClick={() => {
               handleEdit(v);
@@ -87,7 +87,7 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
             okText="Yes"
             cancelText="No"
           >
-            <DeleteTwoTone rev="" twoToneColor="red" />
+            <DeleteTwoTone rev="true" twoToneColor="red" />
           </Popconfirm>
         </>
       ),

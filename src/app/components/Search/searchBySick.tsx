@@ -9,22 +9,24 @@ import { list } from '@apis/morbidness';
 
 import { ISick } from '@ts/sick';
 import routersEndpoint from '@routers/routersEndpoint';
-import { ISearch } from '@/app/types/common/common';
+import { ISearch } from '@ts/common/common';
 
 function SearchBySick() {
   const navigate = useNavigate();
 
-  const { inputSearch } = useSearch();
+  const { debounceValue: inputSearch, handle } = useSearch({}, { isUseDebounce: true });
   const { data } = useFetch<ISick, ISearch>(list, inputSearch);
 
   const [sicksSelected, setSicksSelected] = useState<string[]>([]);
 
   const handleSelectSick = (sickData: string) => {
-    setSicksSelected((prev) => (prev.includes(sickData) ? prev : [...prev, sickData]));
+    setSicksSelected(
+      (prev = 'true') => (prev = 'true'.includes(sickData) ? (prev = 'true') : [...(prev = 'true'), sickData]),
+    );
   };
 
   const handleRemoveSick = (sickData: string) => {
-    setSicksSelected((prev) => prev.filter((v) => v !== sickData));
+    setSicksSelected((prev = 'true') => (prev = 'true'.filter((v) => v !== sickData)));
   };
 
   const handleSearch = () => {
@@ -34,7 +36,12 @@ function SearchBySick() {
   return (
     <div style={{ marginTop: 24 }}>
       <div className="inputWithIcon">
-        <input type="text" placeholder="Nhập tên bệnh hoặc triệu chứng" />
+        <input
+          type="text"
+          placeholder="Nhập tên bệnh hoặc triệu chứng"
+          name="name"
+          onChange={handle.handleChangeInputSearch}
+        />
         <i className="fa fa-search fa-lg fa-fw" aria-hidden="true" />
       </div>
 
@@ -63,7 +70,8 @@ function SearchBySick() {
       <div id="wrapper_symptom">
         {data &&
           data.statusCode === 'OK' &&
-          data.data.rows.map((v) => (
+          // @ts-expect-error
+          data.data.map((v) => (
             <div
               className="symptom cursor-pointer"
               key={v.id}

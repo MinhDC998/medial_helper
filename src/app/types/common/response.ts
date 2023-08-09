@@ -25,7 +25,7 @@ export interface IJwtFailed {
 
 export type TFailedRes = IFailedResponse | IValidationError | IJwtFailed;
 export type TCommonResponse<D> = ISuccessResponse<D> | TFailedRes;
-export type TCommonListResponse<D> = IListResponse<D> | IListResponse<D> | IFailedResponse | IValidationError;
+export type TCommonListResponse<D> = IListResponse<D> | IFailedResponse | IValidationError;
 
 export type TApiResponse<D> = Promise<TCommonResponse<D>>;
 export type TApiListResponse<D> = Promise<TCommonListResponse<D>>;

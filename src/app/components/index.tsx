@@ -63,7 +63,7 @@ export default function App() {
             <Button>
               <Space>
                 {user?.displayName}
-                <UserOutlined rev={user?.displayName} />
+                <UserOutlined rev="true" />
               </Space>
             </Button>
           </Dropdown>

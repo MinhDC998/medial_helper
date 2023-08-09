@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Popconfirm, Table, message } from 'antd';
 import { useLocation, Link } from 'react-router-dom';
 import { DeleteTwoTone, EditTwoTone } from '@ant-design/icons';
@@ -16,6 +16,7 @@ import UserRole from '@constants/role';
 import routersEndpoint from '@routers/routersEndpoint';
 
 function SearchByMedicine(props: { resetDataAt?: string }) {
+  const { resetDataAt } = props;
   const columns = [
     {
       title: 'STT',
@@ -79,10 +80,10 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
               to={routersEndpoint.tenantManageMedicineById.replace(':medicineId', v.id.toString())}
               style={{ marginRight: 12 }}
             >
-              <EditTwoTone rev />
+              <EditTwoTone rev="true" />
             </Link>
             <Popconfirm title="Xóa" onConfirm={async () => handleDelete(v.id)} okText="Xóa" cancelText="Không">
-              <DeleteTwoTone rev twoToneColor="red" />
+              <DeleteTwoTone rev="true" twoToneColor="red" />
             </Popconfirm>
           </>
         ),
@@ -95,20 +96,35 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
     {
       morbidness: location.state?.sicksSelected ? location.state?.sicksSelected.toString() : '',
       key: '',
+      limit: 25,
     },
     { isUseDebounce: true },
   );
   const { data, isLoading, reload } = useFetch<IMedicine, ISearch>(list, debounceValue);
+  const [listData, setListData] = useState(data);
 
   useEffect(() => {
-    if (props.resetDataAt !== '') reload();
-  }, [props.resetDataAt]);
+    if (resetDataAt !== '') reload();
+  }, [resetDataAt]);
+
+  useEffect(() => {
+    setListData(data);
+  }, [data]);
 
   const handleDelete = async (id: number) => {
-    const res = await remove(id);
-    if (res.statusCode === 'OK') {
-      reload();
-      message.success('Xóa thành công');
+    // const res = await remove(id);
+    // if (res.statusCode === 'OK') {
+    //   reload();
+    //   message.success('Xóa thành công');
+    // }
+    if (listData?.statusCode === 'OK') {
+      setListData((prev) => {
+        if (prev?.statusCode === 'OK') {
+          return { ...prev, data: { rows: prev.data.rows.filter((v) => v.id !== id), count: prev.data.count - 1 } };
+        }
+
+        return prev;
+      });
     }
   };
 
@@ -126,7 +142,7 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
 
       <Table
         loading={isLoading}
-        dataSource={(data?.statusCode === 'OK' && data.data.rows) || []}
+        dataSource={(listData?.statusCode === 'OK' && listData.data.rows) || []}
         columns={columns}
         style={{ marginTop: 12 }}
         scroll={{ x: 400 }}
