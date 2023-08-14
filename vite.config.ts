@@ -27,5 +27,8 @@ export default ({ mode }) => {
         '@ts': path.resolve(__dirname, './src/app/types'),
       },
     },
+    preview: {
+      port: 8080,
+    },
   });
 };

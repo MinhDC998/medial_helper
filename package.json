@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "prev='true'iew": "vite prev='true'iew --host"
+    "preview": "vite preview --host"
   },
   "dependencies": {
     "@ant-design/icons": "^5.1.4",

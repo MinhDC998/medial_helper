@@ -157,7 +157,7 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
             {morbidness.replaceAll(',', ', ')}
           </div>
 
-          <div id="wrapper_selection">
+          <div id="wrapper_selection_data">
             <Select
               className="a"
               placeholder="Chọn đối tượng"
