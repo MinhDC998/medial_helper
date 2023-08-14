@@ -8,14 +8,20 @@ import { IMedicine } from '@ts/medicine';
 
 const prefix = 'medicines';
 
-export const list = (input: ISearch): TApiResponse<IMedicine> => sender().get(prefix, input);
-export const create = (data: { name: string }): TApiResponse<IMedicine> => sender().post(prefix, data);
+export const list = async (input: ISearch): TApiResponse<IMedicine> => sender().get(prefix, input);
 
-export const importExcel = (data: any): TApiResponse<IMedicine> =>
+export const listStatus = async (input: ISearch): TApiResponse<IMedicine> =>
+  sender().get(combineEndpoint(prefix, 'list-status'), input);
+
+export const create = async (data: { name: string }): TApiResponse<IMedicine> => sender().post(prefix, data);
+
+export const importExcel = async (data: any): TApiResponse<IMedicine> =>
   sender().post(combineEndpoint(prefix, 'import-excel'), data);
 
-export const update = (id: number, data: IMedicine): TApiResponse<IMedicine> =>
+export const update = async (id: number, data: IMedicine): TApiResponse<IMedicine> =>
   sender().post(combineEndpoint(prefix, id.toString()), data);
 
-export const remove = (id: number): TApiResponse<IMedicine> => sender().del(combineEndpoint(prefix, id.toString()));
-export const detail = (id: number): TApiResponse<IMedicine> => sender().get(combineEndpoint(prefix, id.toString()));
+export const remove = async (id: number): TApiResponse<IMedicine> =>
+  sender().del(combineEndpoint(prefix, id.toString()));
+export const detail = async (id: number): TApiResponse<IMedicine> =>
+  sender().get(combineEndpoint(prefix, id.toString()));

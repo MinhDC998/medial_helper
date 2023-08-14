@@ -20,13 +20,11 @@ function SearchBySick() {
   const [sicksSelected, setSicksSelected] = useState<string[]>([]);
 
   const handleSelectSick = (sickData: string) => {
-    setSicksSelected(
-      (prev = 'true') => (prev = 'true'.includes(sickData) ? (prev = 'true') : [...(prev = 'true'), sickData]),
-    );
+    setSicksSelected((prev) => (prev.includes(sickData) ? prev : [...prev, sickData]));
   };
 
   const handleRemoveSick = (sickData: string) => {
-    setSicksSelected((prev = 'true') => (prev = 'true'.filter((v) => v !== sickData)));
+    setSicksSelected((prev) => prev.filter((v) => v !== sickData));
   };
 
   const handleSearch = () => {

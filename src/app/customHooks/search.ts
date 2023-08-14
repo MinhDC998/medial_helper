@@ -23,7 +23,7 @@ interface IUseSearchRes {
   debounceValue: ISearch;
 }
 
-export default <I>(input?: TUseSearch<I>, debounce?: IUseSearchDebounce): IUseSearchRes => {
+export default <I>(input?: TUseSearch<I>, debounce?: IUseSearchDebounce): IUseSearchRes<I> => {
   const [inputSearch, setInputSearch] = useState<ISearch>({
     ...(input && input),
     offset: input?.offset || 0,

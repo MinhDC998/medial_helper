@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Popconfirm, Table, message } from 'antd';
+import { Popconfirm, Table, Select } from 'antd';
 import { useLocation, Link } from 'react-router-dom';
 import { DeleteTwoTone, EditTwoTone } from '@ant-design/icons';
 
 import useFetch from '@customHooks/fetch';
 import useSearch from '@customHooks/search';
 
-import { list, remove } from '@apis/medicine';
+import { list, listStatus } from '@apis/medicine';
 
-import { IMedicine, TSearchMedicine } from '@ts/medicine';
+import { IMedicine, TSearchMedicine, TListMedicineRes } from '@ts/medicine';
 import { ISearch } from '@ts/common/common';
 import { getUser as user } from '@utils/user';
 import UserRole from '@constants/role';
@@ -17,6 +17,7 @@ import routersEndpoint from '@routers/routersEndpoint';
 
 function SearchByMedicine(props: { resetDataAt?: string }) {
   const { resetDataAt } = props;
+
   const columns = [
     {
       title: 'STT',
@@ -49,6 +50,9 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
       dataIndex: 'dosage',
       key: 'dosage',
       width: 200,
+      render: (v: IMedicine['dosage']) => (
+        <div className="wrapper_dosage">{v && v.split('.').map((p, i) => <p key={`${p} + ${i}`}> {p} </p>)}</div>
+      ),
     },
     {
       title: 'Thành phần chính',
@@ -91,16 +95,22 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
   ];
 
   const location = useLocation();
+  const morbidness = location.state?.sicksSelected ? location.state?.sicksSelected.toString() : '';
 
   const { debounceValue, handle } = useSearch<TSearchMedicine>(
     {
-      morbidness: location.state?.sicksSelected ? location.state?.sicksSelected.toString() : '',
+      morbidness,
+      diseaseStatus: '',
+      specificObject: '',
       key: '',
       limit: 25,
     },
     { isUseDebounce: true },
   );
+
   const { data, isLoading, reload } = useFetch<IMedicine, ISearch>(list, debounceValue);
+  const { data: statusData } = useFetch<TListMedicineRes, ISearch>(listStatus, debounceValue);
+
   const [listData, setListData] = useState(data);
 
   useEffect(() => {
@@ -139,6 +149,38 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
         />
         <i className="fa fa-search fa-lg fa-fw" aria-hidden="true" />
       </div>
+
+      {morbidness !== '' && (
+        <>
+          <div id="wrapper_sick_selected">
+            <span>Các triệu chứng đã chọn:</span>
+            {morbidness.replaceAll(',', ', ')}
+          </div>
+
+          <div id="wrapper_selection">
+            <Select
+              className="a"
+              placeholder="Chọn đối tượng"
+              onChange={(e) => {
+                handle.customChangeInputSearch({ diseaseStatus: e });
+              }}
+              value={debounceValue.diseaseStatus || null}
+              // @ts-expect-error
+              options={statusData?.data.diseaseStatus.map((v) => ({ value: v, label: v })) || []}
+            />
+
+            <Select
+              placeholder="Tình trạng bệnh"
+              onChange={(e) => {
+                handle.customChangeInputSearch({ specificObject: e });
+              }}
+              value={debounceValue.specificObject || null}
+              // @ts-expect-error
+              options={statusData?.data.specificObject.map((v) => ({ value: v, label: v })) || []}
+            />
+          </div>
+        </>
+      )}
 
       <Table
         loading={isLoading}

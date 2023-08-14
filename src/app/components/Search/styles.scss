@@ -42,3 +42,19 @@
     }
   }
 }
+
+.wrapper_dosage {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#wrapper_selection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 2fr));
+  max-width: 700px;
+  gap: 24px;
+  div {
+    width: 100%;
+  }
+}

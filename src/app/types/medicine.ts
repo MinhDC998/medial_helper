@@ -10,10 +10,16 @@ export interface IMedicine {
   specificObject: string;
   ingredients: string;
   note?: string;
+  diseaseStatus?: string;
 }
 
 export interface ICreateMedicine extends IMedicine {
   submitError?: string;
 }
 
-export type TSearchMedicine = Pick<IMedicine, 'morbidness'> & { key: string };
+export type TSearchMedicine = Pick<IMedicine, 'morbidness' | 'diseaseStatus' | 'specificObject'> & { key: string };
+
+export interface TListMedicineRes {
+  diseaseStatus: string[];
+  specificObject: string[];
+}
