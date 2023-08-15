@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Popconfirm, Table, Select } from 'antd';
+import { Popconfirm, Table, Select, Button } from 'antd';
 import { useLocation, Link } from 'react-router-dom';
 import { DeleteTwoTone, EditTwoTone } from '@ant-design/icons';
 
@@ -160,7 +160,7 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
           <div id="wrapper_selection_data">
             <Select
               className="a"
-              placeholder="Chọn đối tượng"
+              placeholder="Tình trạng bệnh "
               onChange={(e) => {
                 handle.customChangeInputSearch({ diseaseStatus: e });
               }}
@@ -170,7 +170,7 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
             />
 
             <Select
-              placeholder="Tình trạng bệnh"
+              placeholder="Chọn đối tượng"
               onChange={(e) => {
                 handle.customChangeInputSearch({ specificObject: e });
               }}
@@ -178,6 +178,10 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
               // @ts-expect-error
               options={statusData?.data.specificObject.map((v) => ({ value: v, label: v })) || []}
             />
+
+            <Button onClick={() => handle.customChangeInputSearch({ specificObject: '', diseaseStatus: '' })}>
+              Xóa
+            </Button>
           </div>
         </>
       )}

@@ -7,7 +7,7 @@ import SearchByMedicine from '@components/Search/searchByMedicine';
 import routersEndpoint from '@routers/routersEndpoint';
 
 import { importExcel } from '@apis/medicine';
-import { randomString } from '@utils/helper';
+import { randomString, isFailedRes } from '@utils/helper';
 import { getUser } from '@utils/user';
 import role from '@constants/role';
 
@@ -32,19 +32,27 @@ function ManageMedicine() {
 
     setUploading(true);
 
-    const res = await importExcel(formData);
-    setUploading(false);
+    try {
+      const res = await importExcel(formData);
+      setUploading(false);
 
-    if (!res || res.statusCode !== 'OK') {
-      message.error('Đã xảy ra lỗi');
+      if (!res || res.statusCode !== 'OK') {
+        message.error('Đã xảy ra lỗi');
 
-      return;
+        return;
+      }
+
+      message.success('Thêm thành công');
+      setFileList([]);
+      toggleModal();
+      setReloadData(randomString());
+    } catch (err) {
+      if (isFailedRes(err)) {
+        message.error(err.message);
+        setFileList([]);
+        setUploading(false);
+      }
     }
-
-    message.success('Thêm thành công');
-    setFileList([]);
-    toggleModal();
-    setReloadData(randomString());
   };
 
   const props: UploadProps = {
