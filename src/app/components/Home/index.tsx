@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Button } from 'antd';
 import { getUser as user } from '@utils/user';
 import { useNavigate } from 'react-router-dom';
@@ -10,10 +10,12 @@ import routersEndpoint from '@routers/routersEndpoint';
 import * as cookie from '@services/cookies';
 
 import AdminDashboard from './adminDashboard';
+import UserManagement from './userManagement';
 import './styles.scss';
 
 function Home(): JSX.Element {
   const navigate = useNavigate();
+  const userRef = useRef();
 
   const [selectedTenant, setSelectedTenant] = useState<undefined | ITenant>(undefined);
 

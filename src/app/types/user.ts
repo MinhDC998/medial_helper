@@ -15,3 +15,5 @@ export interface ILoginInput {
   password: string;
   submitError?: string;
 }
+
+export interface IRegisterInput extends Pick<IUser, 'displayName' | 'username' | 'password' | 'role' | 'tenantId'> {}

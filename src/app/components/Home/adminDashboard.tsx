@@ -1,8 +1,11 @@
 import React, { useState, FC } from 'react';
-import { Button, Modal, Table, message, Popconfirm } from 'antd';
+import {
+  Button, Modal, Table, message, Popconfirm,
+} from 'antd';
 import { DeleteTwoTone, EditTwoTone } from '@ant-design/icons';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 
 import ROLE from '@constants/role';
@@ -12,7 +15,10 @@ import { ITenant } from '@ts/tenant';
 
 import useFetch from '@customHooks/fetch';
 import useSearch from '@customHooks/search';
-import { create, list, remove, update } from '@apis/tenant';
+import {
+  create, list, remove, update,
+} from '@apis/tenant';
+import routersEndpoint from '@routers/routersEndpoint';
 
 interface IAdminDashboard {
   selectedTenant: ITenant | undefined;
@@ -22,8 +28,9 @@ interface IAdminDashboard {
 }
 
 const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
-  const { selectedTenant, handleSelectTenant, searchComponent } = props;
-
+  const {
+    selectedTenant, handleSelectTenant, searchComponent, handleNavigation,
+  } = props;
   const { inputSearch, handle } = useSearch();
   const { data, reload, isLoading } = useFetch<ITenant, {}>(list, inputSearch);
 
@@ -80,13 +87,7 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
               handleEdit(v);
             }}
           />
-          <Popconfirm
-            title="Delete the task"
-            description="Are you sure to delete this task?"
-            onConfirm={async () => handleDelete(v.id)}
-            okText="Yes"
-            cancelText="No"
-          >
+          <Popconfirm title="Xóa?" onConfirm={async () => handleDelete(v.id)} okText="Yes" cancelText="No">
             <DeleteTwoTone rev="true" twoToneColor="red" />
           </Popconfirm>
         </>
@@ -156,8 +157,14 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
         <strong>{selectedTenant?.name}</strong>
       </p>
       {searchComponent}
-
-      <div className="button_select cursor-pointer"> Quản lý người dùng </div>
+      <div
+        className="button_select cursor-pointer"
+        onClick={() => {
+          handleNavigation(routersEndpoint.tenantManagementUser);
+        }}
+      >
+        Quản lý người dùng
+      </div>
     </div>
   ) : (
     <>

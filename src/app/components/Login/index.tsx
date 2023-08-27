@@ -56,7 +56,6 @@ function Login() {
         reset();
       }
     } catch (err) {
-      console.log({ err });
       if (isFailedRes(err)) {
         switch (err.statusCode) {
           case 'invalidCredentials':
