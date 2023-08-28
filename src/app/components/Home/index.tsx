@@ -10,7 +10,6 @@ import routersEndpoint from '@routers/routersEndpoint';
 import * as cookie from '@services/cookies';
 
 import AdminDashboard from './adminDashboard';
-import UserManagement from './userManagement';
 import './styles.scss';
 
 function Home(): JSX.Element {

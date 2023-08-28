@@ -17,7 +17,9 @@ import { create } from '@apis/user';
 import { COMMON } from '@constants/common';
 import ROLE from '@constants/role';
 
-const UserModal = (_: any, ref: any) => {
+const UserModal = (props: { reload?: () => void }, ref: any) => {
+  const { reload } = props;
+
   const schema = yup.object().shape({
     username: yup.string().required('Tên đăng nhập không được để trống.'),
     password: yup.string().required('Mật khẩu không được để trống.').min(6, 'Tối thiểu 6 kí tự'),
@@ -77,12 +79,14 @@ const UserModal = (_: any, ref: any) => {
           toggleModal();
           reset();
 
+          reload && reload();
+
           return;
 
         default:
           throw new Error('Đã xảy ra lỗi');
       }
-    } catch (err) {
+    } catch (err: any) {
       if (isFailedRes(err)) {
         switch (err.statusCode) {
           case 'invalidCredentials':
@@ -114,17 +118,10 @@ const UserModal = (_: any, ref: any) => {
         </div>
 
         <div className={`form-group ${errors.password ? 'error-form-group' : ''}`}>
-          <label htmlFor="username">Mật khẩu</label>
-          <input type="text" id="password" {...register('password')} />
+          <label htmlFor="password">Mật khẩu</label>
+          <input type="password" id="password" {...register('password')} />
 
           <span className="error-message">{errors.password ? errors.password.message : ''}</span>
-        </div>
-
-        <div className={`form-group ${errors.confirmPassword ? 'error-form-group' : ''}`}>
-          <label htmlFor="confirmPassword">Xác nhận mật khẩu</label>
-          <input type="text" id="confirmPassword" {...register('confirmPassword')} />
-
-          <span className="error-message">{errors.confirmPassword ? errors.confirmPassword.message : ''}</span>
         </div>
 
         <div className={`form-group ${errors.displayName ? 'error-form-group' : ''}`}>

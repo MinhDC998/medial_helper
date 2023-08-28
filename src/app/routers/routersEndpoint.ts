@@ -1,5 +1,5 @@
 export default {
-  login: '/dang-nhap',
+  login: '/',
   home: '/trang-chu',
   searchBy: '/truy-cuu/:by',
   tenant: '/nha-thuoc/:id',

@@ -1,7 +1,5 @@
-import React, { useState, FC } from 'react';
-import {
-  Button, Modal, Table, message, Popconfirm,
-} from 'antd';
+import React, { useState, FC, useEffect } from 'react';
+import { Button, Modal, Table, message, Popconfirm, Select } from 'antd';
 import { DeleteTwoTone, EditTwoTone } from '@ant-design/icons';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -11,13 +9,15 @@ import * as yup from 'yup';
 import ROLE from '@constants/role';
 import { getUser } from '@utils/user';
 
+import { IUser } from '@ts/user';
 import { ITenant } from '@ts/tenant';
 
 import useFetch from '@customHooks/fetch';
 import useSearch from '@customHooks/search';
-import {
-  create, list, remove, update,
-} from '@apis/tenant';
+
+import { create, list, remove, update } from '@apis/tenant';
+import { listAll, usersTenant } from '@apis/user';
+
 import routersEndpoint from '@routers/routersEndpoint';
 
 interface IAdminDashboard {
@@ -28,9 +28,7 @@ interface IAdminDashboard {
 }
 
 const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
-  const {
-    selectedTenant, handleSelectTenant, searchComponent, handleNavigation,
-  } = props;
+  const { selectedTenant, handleSelectTenant, searchComponent, handleNavigation } = props;
   const { inputSearch, handle } = useSearch();
   const { data, reload, isLoading } = useFetch<ITenant, {}>(list, inputSearch);
 
@@ -41,6 +39,17 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
   });
 
   const [edit, setEdit] = useState<ITenant>();
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [listUsers, setListUsers] = useState<IUser[]>([]);
+  const [isOpenModal, setIsOpenModal] = useState(false);
+
+  const filteredOptions = listUsers.filter((o) => !selectedUsers.includes(o.username));
+
+  useEffect(() => {
+    listAll().then((res) => {
+      if (res.statusCode === 'OK') setListUsers(res.data);
+    });
+  }, []);
 
   const {
     register,
@@ -103,17 +112,23 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
     }
   };
 
-  const handleEdit = (data: ITenant) => {
+  const handleEdit = async (data: ITenant) => {
     toggleModal();
+
+    const selectUsers = await usersTenant(data.id);
+
+    if (selectUsers.statusCode === 'OK') {
+      setSelectedUsers(() => selectUsers.data.map((v) => v.username));
+    }
+
     setEdit(data);
     setValue('name', data.name);
   };
 
-  const [isOpenModal, setIsOpenModal] = useState(false);
-
   const onSubmit = async (data: { name: string }) => {
     try {
-      const caller = !edit ? create(data) : update(edit.id, data as ITenant);
+      const dataInput = { ...data, usersName: selectedUsers };
+      const caller = !edit ? create(dataInput) : update(edit.id, dataInput);
       const res = await caller;
 
       switch (res.statusCode) {
@@ -145,6 +160,7 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
   };
 
   const toggleModal = () => {
+    setSelectedUsers([]);
     setIsOpenModal(!isOpenModal);
     reset();
     setEdit(undefined);
@@ -213,6 +229,21 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
             <div className={`form-group ${errors.name ? 'error-form-group' : ''}`}>
               <label htmlFor="name">Tên nhà thuốc</label>
               <input type="text" id="name" {...register('name')} />
+
+              <span className="error-message">{errors.name ? errors.name.message : ''}</span>
+            </div>
+
+            <div className={`form-group ${errors.name ? 'error-form-group' : ''}`}>
+              <label htmlFor="name">Thêm/xóa quản lý nhà thuốc</label>
+
+              <Select
+                mode="multiple"
+                value={selectedUsers}
+                onChange={setSelectedUsers}
+                style={{ width: '100%', padding: '6px 0' }}
+                options={filteredOptions}
+                fieldNames={{ value: 'username', label: 'username' }}
+              />
 
               <span className="error-message">{errors.name ? errors.name.message : ''}</span>
             </div>

@@ -2,6 +2,7 @@ import ROLE from '@constants/role';
 import { ValueOf } from './common/common';
 
 export interface IUser {
+  id: number;
   username: string;
   password: string;
   displayName: string;
