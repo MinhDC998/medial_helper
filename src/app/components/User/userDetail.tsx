@@ -8,10 +8,8 @@ import * as yup from 'yup';
 import { isFailedRes } from '@utils/helper';
 
 import * as cookie from '@services/cookies';
-import { ITenant } from '@ts/tenant';
 import { IRegisterInput } from '@ts/user';
 
-import { listAll } from '@apis/tenant';
 import { create } from '@apis/user';
 
 import { COMMON } from '@constants/common';
@@ -29,7 +27,6 @@ const UserModal = (props: { reload?: () => void }, ref: any) => {
   });
   const tenant = cookie.default.get(COMMON.COOKIE.TENANT);
 
-  const [tenants, setTenants] = useState<ITenant[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const {
     register,
@@ -47,18 +44,6 @@ const UserModal = (props: { reload?: () => void }, ref: any) => {
     setValue('tenantId', tenant || null);
     setValue('role', ROLE.TENANT_USER || null);
   });
-
-  useEffect(() => {
-    listAll()
-      .then((res) => {
-        if (res.statusCode === 'OK') {
-          setTenants(res.data);
-        }
-      })
-      .catch((err) => {
-        console.log({ err });
-      });
-  }, []);
 
   const toggleModal = () => {
     reset();
@@ -150,7 +135,7 @@ const UserModal = (props: { reload?: () => void }, ref: any) => {
           <span className="error-message">{errors.role ? errors.role.message : ''}</span>
         </div>
 
-        <div className={`form-group ${errors.tenantId ? 'error-form-group' : ''}`}>
+        {/* <div className={`form-group ${errors.tenantId ? 'error-form-group' : ''}`}>
           <label htmlFor="tenantId">Nhà thuốc</label>
 
           <Select
@@ -165,7 +150,7 @@ const UserModal = (props: { reload?: () => void }, ref: any) => {
           />
 
           <span className="error-message">{errors.tenantId ? errors.tenantId.message : ''}</span>
-        </div>
+        </div> */}
       </form>
     </Modal>
   );

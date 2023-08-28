@@ -8,18 +8,25 @@ import * as yup from 'yup';
 import useFetch from '@customHooks/fetch';
 import useSearch from '@customHooks/search';
 
-import { list, update } from '@apis/user';
+import { list, update, remove } from '@apis/user';
 import { listAll } from '@apis/tenant';
 
 import { IUser } from '@ts/user';
 import { ITenant } from '@ts/tenant';
 
+import { isFailedRes } from '@utils/helper';
+
 import UserDetail from './userDetail';
-import { isFailedRes } from '@/app/utils/helper';
 
 function ManegeUser() {
   const schema = yup.object().shape({
-    password: yup.string().required('Mật khẩu không được để trống.').min(6, 'Tối thiểu 6 kí tự'),
+    password: yup
+      .string()
+      .notRequired()
+      .min(6, 'Tối thiểu 6 kí tự')
+      .nullable()
+      .transform((value) => value || null),
+    displayName: yup.string().required('Tên hiển thị không được để trống.'),
   });
 
   const { inputSearch, handle } = useSearch();
@@ -31,7 +38,7 @@ function ManegeUser() {
     setError,
     reset,
     setValue,
-  } = useForm<{ password: string; id?: number }>({
+  } = useForm<{ password?: string; id?: number; displayName: string }>({
     resolver: yupResolver(schema),
   });
 
@@ -47,21 +54,30 @@ function ManegeUser() {
 
   const userRef = useRef<any>();
 
-  const handleDelete = (id: number) => {
-    console.log({ id });
+  const handleDelete = async (id: number) => {
+    const res = await remove(id);
+
+    if (res.statusCode === 'OK') {
+      reload();
+      message.success('Xóa thành công');
+    }
   };
 
   const toggleModal = (data?: IUser) => () => {
     setIsOpen(!isOpen);
-    setValue('id', data?.id);
-    setUpdateUser(data);
-    reset();
+
+    if (data) {
+      setValue('id', data?.id);
+      setValue('displayName', data?.displayName);
+      setUpdateUser(data);
+    } else {
+      reset();
+    }
   };
 
-  const onSubmit = async (data: { password: string }) => {
+  const onSubmit = async (data: { password: string; displayName: string }) => {
     try {
-      const res = await update(data);
-      console.log({ res });
+      const res = await update({ ...data, id: updateUser?.id });
 
       switch (res.statusCode) {
         case 'OK':
@@ -183,6 +199,13 @@ function ManegeUser() {
         ]}
       >
         <form onSubmit={handleSubmit(onSubmit)} id="userForm" className="form" style={{ margin: 0, padding: 0 }}>
+          <div className={`form-group ${errors.displayName ? 'error-form-group' : ''}`}>
+            <label htmlFor="displayName">Tên hiển thị</label>
+            <input type="text" id="displayName" {...register('displayName')} />
+
+            <span className="error-message">{errors.displayName ? errors.displayName.message : ''}</span>
+          </div>
+
           <div className={`form-group ${errors.password ? 'error-form-group' : ''}`}>
             <label htmlFor="password">Mật khẩu mới</label>
             <input type="password" id="password" {...register('password')} />

@@ -10,6 +10,7 @@ const prefix = 'users';
 export const login = async (input: any): TApiResponse<IUser> => sender().post(combineEndpoint(prefix, 'login'), input);
 export const list = async (input: ISearch): TApiResponse<IUser> => sender().get(prefix, input);
 export const listAll = async (): TApiResponse<IUser[]> => sender().get(combineEndpoint(prefix, 'all'));
+export const remove = async (id: number): TApiResponse<boolean> => sender().del(combineEndpoint(prefix, id.toString()));
 
 export const update = async (data: any): TApiResponse<IUser[]> =>
   sender().post(combineEndpoint(prefix, data.id.toString()), data);

@@ -1,12 +1,12 @@
 import React, { useState, FC, useEffect } from 'react';
-import { Button, Modal, Table, message, Popconfirm, Select } from 'antd';
+import { Button, Modal, Table, message, Popconfirm } from 'antd';
 import { DeleteTwoTone, EditTwoTone } from '@ant-design/icons';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 
 import ROLE from '@constants/role';
+import { TENANT_STATUS } from '@constants/tenant';
 import { getUser } from '@utils/user';
 
 import { IUser } from '@ts/user';
@@ -15,7 +15,7 @@ import { ITenant } from '@ts/tenant';
 import useFetch from '@customHooks/fetch';
 import useSearch from '@customHooks/search';
 
-import { create, list, remove, update } from '@apis/tenant';
+import { create, list, update } from '@apis/tenant';
 import { listAll, usersTenant } from '@apis/user';
 
 import routersEndpoint from '@routers/routersEndpoint';
@@ -96,7 +96,7 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
               handleEdit(v);
             }}
           />
-          <Popconfirm title="Xóa?" onConfirm={async () => handleDelete(v.id)} okText="Yes" cancelText="No">
+          <Popconfirm title="Xóa?" onConfirm={async () => handleDelete(v)} okText="Yes" cancelText="No">
             <DeleteTwoTone rev="true" twoToneColor="red" />
           </Popconfirm>
         </>
@@ -104,8 +104,9 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
     },
   ];
 
-  const handleDelete = async (id: number) => {
-    const res = await remove(id);
+  const handleDelete = async (data: ITenant) => {
+    const res = await update(data.id, { ...data, status: TENANT_STATUS.DEACTIVATED });
+
     if (res.statusCode === 'OK') {
       reload();
       message.success('Xóa thành công');
@@ -172,7 +173,6 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
         Bạn đang chọn chi nhánh:
         <strong>{selectedTenant?.name}</strong>
       </p>
-      {searchComponent}
       <div
         className="button_select cursor-pointer"
         onClick={() => {
@@ -233,7 +233,7 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
               <span className="error-message">{errors.name ? errors.name.message : ''}</span>
             </div>
 
-            <div className={`form-group ${errors.name ? 'error-form-group' : ''}`}>
+            {/* <div className={`form-group ${errors.name ? 'error-form-group' : ''}`}>
               <label htmlFor="name">Thêm/xóa quản lý nhà thuốc</label>
 
               <Select
@@ -246,7 +246,7 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
               />
 
               <span className="error-message">{errors.name ? errors.name.message : ''}</span>
-            </div>
+            </div> */}
           </form>
         </Modal>
       </div>
