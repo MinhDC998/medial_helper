@@ -29,8 +29,8 @@ function ManegeUser() {
     displayName: yup.string().required('Tên hiển thị không được để trống.'),
   });
 
-  const { inputSearch, handle } = useSearch();
-  const { data, isLoading, reload } = useFetch<IUser, {}>(list, inputSearch);
+  const { debounceValue, handle, inputSearch } = useSearch({}, { isUseDebounce: true });
+  const { data, isLoading, reload } = useFetch<IUser, {}>(list, debounceValue);
   const {
     register,
     handleSubmit,
@@ -165,6 +165,16 @@ function ManegeUser() {
     <div className="main_content">
       <div id="wrapper_btn">
         <Button onClick={userRef.current?.toggleModal}>Thêm mới</Button>
+      </div>
+
+      <div className="inputWithIcon">
+        <input
+          type="text"
+          placeholder="Tìm theo tên đăng nhập hoặc tên hiển thị"
+          name="key"
+          onChange={handle.handleChangeInputSearch}
+        />
+        <i className="fa fa-search fa-lg fa-fw" aria-hidden="true" />
       </div>
 
       <Table

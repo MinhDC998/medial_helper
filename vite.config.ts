@@ -7,7 +7,7 @@ export default ({ mode }) => {
 
   return defineConfig({
     plugins: [react()],
-    base: './',
+    base: '/',
     build: {
       target: 'esnext',
     },

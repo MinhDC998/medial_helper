@@ -83,7 +83,7 @@ function MedicineDetail() {
       if (file.input) form.append('file', file.input);
       const isUpdate = params?.medicineId && !Number.isNaN(+params.medicineId);
 
-      const caller = isUpdate ? update(+!params.medicineId, form as any) : create(form as any);
+      const caller = isUpdate ? update(+params.medicineId, form as any) : create(form as any);
 
       const res = await caller;
 

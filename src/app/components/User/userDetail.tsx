@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
-import { Modal, message, Select } from 'antd';
+import { Modal, message, Select, Button } from 'antd';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -93,8 +93,19 @@ const UserModal = (props: { reload?: () => void }, ref: any) => {
   };
 
   return (
-    <Modal title="Tạo tài khoản" open={isOpen} onOk={handleSubmit(onSubmit)} onCancel={toggleModal}>
-      <form onSubmit={handleSubmit(onSubmit)} id="tenantForm" className="form" style={{ margin: 0, padding: 0 }}>
+    <Modal
+      title="Tạo tài khoản"
+      open={isOpen}
+      footer={[
+        <Button onClick={toggleModal} key="cancel">
+          Hủy bỏ
+        </Button>,
+        <Button form="userForm" key="submit" htmlType="submit" type="primary">
+          Tạo mới
+        </Button>,
+      ]}
+    >
+      <form onSubmit={handleSubmit(onSubmit)} id="userForm" className="form" style={{ margin: 0, padding: 0 }}>
         <div className={`form-group ${errors.username ? 'error-form-group' : ''}`}>
           <label htmlFor="username">Tên tài khoản</label>
           <input type="text" id="username" {...register('username')} />
