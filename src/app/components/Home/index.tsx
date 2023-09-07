@@ -71,7 +71,7 @@ function Home(): JSX.Element {
             handleNavigation(routersEndpoint.tenantManageMedicine);
           }}
         >
-          Truy vấn dữ liệu thuốc
+          Quản lý danh mục thuốc
         </div>
         {searchComponent}
       </>

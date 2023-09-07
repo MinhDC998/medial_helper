@@ -9,6 +9,7 @@ import { ICreateMedicine } from '@ts/medicine';
 import routersEndpoint from '@routers/routersEndpoint';
 
 import { create, detail as getDetail, update } from '@apis/medicine';
+import { isFailedRes } from '@/app/utils/helper';
 
 function MedicineDetail() {
   const navigate = useNavigate();
@@ -87,30 +88,30 @@ function MedicineDetail() {
 
       const res = await caller;
 
-      switch (res.statusCode) {
-        case 'invalidCredentials':
-        case 'FAILED':
-          setError('submitError', { type: 'custom', message: res.message });
-          return;
-
-        case 'RequiredField':
-          Object.keys(res.message).forEach((v: any) => {
-            setError(v, { type: 'custom', message: res.message[v][0] });
-          });
-          return;
-
-        case 'OK':
-          navigate(routersEndpoint.tenantManageMedicine);
-          message.success(isUpdate ? 'Cập nhật thành công' : 'Thêm mới thành công');
-          reset();
-
-          return;
-
-        default:
-          throw new Error('Đã xảy ra lỗi');
+      if (res.statusCode === 'OK') {
+        navigate(routersEndpoint.tenantManageMedicine);
+        message.success(isUpdate ? 'Cập nhật thành công' : 'Thêm mới thành công');
+        reset();
       }
     } catch (err) {
-      throw new Error('Đã xảy ra lỗi');
+      if (isFailedRes(err)) {
+        switch (err.statusCode) {
+          case 'invalidCredentials':
+          case 'FAILED':
+            message.error(err.message);
+            return;
+
+          case 'RequiredField':
+            Object.keys(err.message).forEach((v: any) => {
+              // @ts-expect-error
+              setError(v, { type: 'custom', message: err.message[v][0] });
+            });
+            return;
+
+          default:
+            throw new Error('Đã xảy ra lỗi');
+        }
+      }
     }
   };
 
