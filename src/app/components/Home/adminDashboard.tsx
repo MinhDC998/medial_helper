@@ -43,7 +43,7 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
   const [listUsers, setListUsers] = useState<IUser[]>([]);
   const [isOpenModal, setIsOpenModal] = useState(false);
 
-  const filteredOptions = listUsers.filter((o) => !selectedUsers.includes(o.username));
+  // const filteredOptions = listUsers.filter((o) => !selectedUsers.includes(o.username));
 
   useEffect(() => {
     listAll().then((res) => {
@@ -88,7 +88,11 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
       key: 'x',
       width: 50,
       render: (v: ITenant) => (
-        <>
+        <div
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
+        >
           <EditTwoTone
             rev="true"
             style={{ marginRight: 12 }}
@@ -99,7 +103,7 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
           <Popconfirm title="Xóa?" onConfirm={async () => handleDelete(v)} okText="Yes" cancelText="No">
             <DeleteTwoTone rev="true" twoToneColor="red" />
           </Popconfirm>
-        </>
+        </div>
       ),
     },
   ];
@@ -198,11 +202,11 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
           rowKey="id"
           rowClassName="cursor-pointer"
           scroll={{ x: 996 }}
-          // onRow={(record) => ({
-          //   onClick: () => {
-          //     handleSelectTenant(record);
-          //   },
-          // })}
+          onRow={(record) => ({
+            onClick: () => {
+              handleSelectTenant(record);
+            },
+          })}
           pagination={{
             onChange: (page) => {
               handle.handleChangePage(page - 1);
@@ -213,7 +217,7 @@ const AdminDashboard: FC<IAdminDashboard> = (props: IAdminDashboard) => {
         />
 
         <Modal
-          title="Thêm mới nhà thuốc"
+          title={!edit ? 'Thêm mới nhà thuốc' : 'Sửa tên nhà thuốc'}
           open={isOpenModal}
           onCancel={toggleModal}
           footer={[

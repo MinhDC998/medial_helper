@@ -15,6 +15,31 @@ import UserRole from '@constants/role';
 
 import routersEndpoint from '@routers/routersEndpoint';
 
+function getWindowDimensions() {
+  const { innerWidth: width, innerHeight: height } = window;
+  return {
+    width,
+    height,
+  };
+}
+
+function useWindowDimensions() {
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimensions());
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  return windowDimensions;
+}
+
 function SearchByMedicine(props: { resetDataAt?: string }) {
   const { resetDataAt } = props;
 
@@ -94,6 +119,82 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
     },
   ];
 
+  const mobileView = [
+    {
+      title: 'STT',
+      dataIndex: 'index',
+      key: 'index',
+      width: 50,
+      render: (_: unknown, __: unknown, index: number) => <span>{++index}</span>,
+    },
+    {
+      title: 'Tên thuốc',
+      dataIndex: 'medicineName',
+      key: 'medicineName',
+      width: 200,
+    },
+    {
+      title: 'Liều lượng',
+      dataIndex: 'dosage',
+      key: 'dosage',
+      width: 200,
+      render: (v: IMedicine['dosage']) => (
+        <div className="wrapper_dosage">{v && v.split('.').map((p, i) => <p key={`${p} + ${i}`}> {p} </p>)}</div>
+      ),
+    },
+    {
+      title: 'Đối tượng',
+      dataIndex: 'specificObject',
+      key: 'specificObject',
+      width: 200,
+    },
+    {
+      title: 'Mã Thuốc',
+      dataIndex: 'medicineCode',
+      key: 'medicineCode',
+      width: 200,
+    },
+    {
+      title: 'Hình ảnh',
+      dataIndex: 'image',
+      key: 'image',
+      width: 100,
+      render: (v: any) => (v ? <img src={v} alt={v} className="image_pill" /> : ''),
+    },
+    {
+      title: 'Thành phần chính',
+      dataIndex: 'ingredients',
+      key: 'ingredients',
+      width: 200,
+    },
+    {
+      title: 'Ghi chú',
+      dataIndex: 'note',
+      key: 'note',
+      width: 200,
+    },
+    {
+      title: 'Action',
+      dataIndex: '',
+      key: 'x',
+      width: 50,
+      render: (v: IMedicine) =>
+        +user().role === UserRole.TENANT_USER && (
+          <>
+            <Link
+              to={routersEndpoint.tenantManageMedicineById.replace(':medicineId', v.id.toString())}
+              style={{ marginRight: 12 }}
+            >
+              <EditTwoTone rev="true" />
+            </Link>
+            <Popconfirm title="Xóa" onConfirm={async () => handleDelete(v.id)} okText="Xóa" cancelText="Không">
+              <DeleteTwoTone rev="true" twoToneColor="red" />
+            </Popconfirm>
+          </>
+        ),
+    },
+  ];
+
   const location = useLocation();
   const morbidness = location.state?.sicksSelected ? location.state?.sicksSelected.toString() : '';
 
@@ -112,6 +213,7 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
   const { data: statusData } = useFetch<TListMedicineRes, ISearch>(listStatus, debounceValue);
 
   const [listData, setListData] = useState(data);
+  const { width } = useWindowDimensions();
 
   useEffect(() => {
     if (resetDataAt !== '') reload();
@@ -189,7 +291,7 @@ function SearchByMedicine(props: { resetDataAt?: string }) {
       <Table
         loading={isLoading}
         dataSource={(listData?.statusCode === 'OK' && listData.data.rows) || []}
-        columns={columns}
+        columns={width <= 1024 ? mobileView : columns}
         style={{ marginTop: 12 }}
         scroll={{ x: 400 }}
         rowKey="id"
